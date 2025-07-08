@@ -10,6 +10,9 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { type ComponentProps } from "react";
 
+/**
+ * Renders a skeleton UI for the app sidebar.
+ */
 export default function AppSidebarSkeleton({
   ...props
 }: ComponentProps<typeof Sidebar>) {
