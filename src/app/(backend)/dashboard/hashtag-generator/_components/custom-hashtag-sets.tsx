@@ -128,6 +128,15 @@ const platforms = [
   { value: "instagram", label: "Instagram" }
 ];
 
+/**
+ * A React component that manages a collection of hashtag sets, allowing users to create, edit, and delete them.
+ *
+ * The component fetches hashtag sets from an API and renders them in a grid layout. Users can also filter the sets by category and platform.
+ * It includes a dialog for creating or editing hashtag sets, where users can input details such as name, description, hashtags, tags, platform, and category.
+ * The component handles form submissions, including validation using zodResolver, and performs mutations to create, update, or delete hashtag sets via API calls.
+ *
+ * @returns A React element representing the Hashtag Sets management interface.
+ */
 export default function CustomHashtagSets() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSet, setEditingSet] = useState<HashtagSet | null>(null);
@@ -183,6 +192,14 @@ export default function CustomHashtagSets() {
     },
   });
 
+  /**
+   * Handles the submission of a hashtag set form.
+   *
+   * This function processes the form values, splits hashtags and tags into arrays,
+   * constructs a data object, and either updates an existing set or creates a new one
+   * based on whether `editingSet` is truthy. After submission, it resets the form
+   * and closes the dialog.
+   */
   const onSubmit = (values: HashtagSetFormValues) => {
     const hashtagList = values.hashtags.split(/[,\s]+/).filter(Boolean);
     const tagList = values.tags ? values.tags.split(/[,\s]+/).filter(Boolean) : [];
@@ -211,6 +228,9 @@ export default function CustomHashtagSets() {
     setEditingSet(null);
   };
 
+  /**
+   * Handles editing of a hashtag set by setting its values in the form and opening the dialog.
+   */
   const handleEdit = (set: HashtagSet) => {
     setEditingSet(set);
     form.setValue("name", set.name);
@@ -223,10 +243,16 @@ export default function CustomHashtagSets() {
     setIsDialogOpen(true);
   };
 
+  /**
+   * Deletes an item by its ID using the delete mutation.
+   */
   const handleDelete = (id: string) => {
     deleteMutation.mutate({ id });
   };
 
+  /**
+   * Copies an array of hashtags to the clipboard and shows a success toast notification.
+   */
   const handleCopyHashtags = (hashtags: string[]) => {
     navigator.clipboard.writeText(hashtags.join(" "));
     toast.success("Hashtags copied to clipboard!");
@@ -234,6 +260,9 @@ export default function CustomHashtagSets() {
 
   const filteredSets = hashtagSets;
 
+  /**
+   * Formats a date string to a short, numeric format (e.g., Jan 1, 2023).
+   */
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
