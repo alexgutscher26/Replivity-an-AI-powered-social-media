@@ -44,7 +44,7 @@ A powerful AI-powered social media response generator that helps users create en
 - **Build System**: TypeScript with ESLint
 
 ### AI Integration
-- **Providers**: OpenAI, Google AI, Mistral AI
+- **Providers**: OpenAI, Google AI, Mistral AI, Anthropic (Claude)
 - **SDK**: Vercel AI SDK for unified AI model access
 
 ## 📦 Installation
@@ -52,7 +52,7 @@ A powerful AI-powered social media response generator that helps users create en
 ### Prerequisites
 - Node.js 18+ 
 - PostgreSQL database
-- API keys for AI providers (OpenAI, Google, Mistral)
+- API keys for AI providers (OpenAI, Google, Mistral, Anthropic)
 - Stripe and/or PayPal accounts for payments
 
 ### Web Platform Setup

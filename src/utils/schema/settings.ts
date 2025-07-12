@@ -64,6 +64,31 @@ export const AI_MODEL_LIST = [
     name: "Gemini 2.0 Flash-Lite",
     provider: "google",
   },
+  {
+    key: "gemini-1.5-pro-latest",
+    name: "Gemini 1.5 Pro",
+    provider: "google",
+  },
+  {
+    key: "gemini-2.0-pro",
+    name: "Gemini 2.0 Pro",
+    provider: "google",
+  },
+  {
+    key: "claude-3-haiku-20240307",
+    name: "Claude 3 Haiku",
+    provider: "anthropic",
+  },
+  {
+    key: "claude-3-sonnet-20240229",
+    name: "Claude 3 Sonnet",
+    provider: "anthropic",
+  },
+  {
+    key: "claude-3-opus-20240229",
+    name: "Claude 3 Opus",
+    provider: "anthropic",
+  },
 ] as const;
 export type AiModelList = typeof AI_MODEL_LIST;
 export type AIModel = (typeof AI_MODEL_LIST)[number]["key"];

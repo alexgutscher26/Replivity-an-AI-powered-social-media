@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use server";
 
 import { auth } from "@/server/auth";
@@ -11,6 +14,7 @@ import {
   STORAGE_PROVIDERS_LIST,
   type StorageProviderSettings,
 } from "@/utils/schema/settings";
+import { createAnthropic } from "@ai-sdk/anthropic";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createMistral } from "@ai-sdk/mistral";
 import { createOpenAI } from "@ai-sdk/openai";
@@ -64,6 +68,13 @@ export const getAIInstance = async ({
       const googleai = createGoogleGenerativeAI({ apiKey });
       return {
         instance: googleai(selectedModel.key),
+        model: selectedModel,
+      };
+    }
+    case "anthropic": {
+      const anthropic = createAnthropic({ apiKey });
+      return {
+        instance: anthropic(selectedModel.key),
         model: selectedModel,
       };
     }

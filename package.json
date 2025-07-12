@@ -20,6 +20,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^1.2.12",
     "@ai-sdk/google": "^1.1.25",
     "@ai-sdk/mistral": "^1.1.17",
     "@ai-sdk/openai": "^1.2.5",
