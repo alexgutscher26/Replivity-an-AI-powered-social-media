@@ -49,6 +49,15 @@ interface CompetitionData {
 
 
 
+/**
+ * Hashtag Competition Analysis component.
+ *
+ * This component allows users to analyze hashtag competition across different platforms such as Twitter, Facebook, LinkedIn, and Instagram.
+ * It fetches competition data using an API call and provides a detailed breakdown of various metrics including engagement, opportunity, trends, and optimal posting times.
+ * Users can input a hashtag and select a platform for analysis. The component handles state management for search input, selected platform, and analysis status.
+ *
+ * @returns JSX elements rendering the Hashtag Competition Analysis interface.
+ */
 export default function HashtagCompetitionAnalysis() {
   const [searchHashtag, setSearchHashtag] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState("twitter");
@@ -74,6 +83,16 @@ export default function HashtagCompetitionAnalysis() {
     },
   });
 
+  /**
+   * Determine the color classes based on the difficulty level.
+   *
+   * This function maps a given difficulty string to a corresponding set of Tailwind CSS utility classes
+   * that define background, text, and border colors. If the difficulty does not match any predefined cases,
+   * it defaults to a gray color scheme.
+   *
+   * @param difficulty - A string representing the difficulty level ("easy", "medium", "hard", "very_hard").
+   * @returns A string of Tailwind CSS utility classes for styling based on the difficulty.
+   */
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case "easy":
@@ -89,6 +108,16 @@ export default function HashtagCompetitionAnalysis() {
     }
   };
 
+  /**
+   * Determines the difficulty icon based on the given difficulty level.
+   *
+   * This function maps a string representing the difficulty level to a corresponding icon component.
+   * The supported difficulty levels are 'easy', 'medium', 'hard', and 'very_hard'.
+   * If the provided difficulty does not match any of these, it defaults to returning a Minus icon.
+   *
+   * @param difficulty - A string representing the difficulty level ('easy', 'medium', 'hard', 'very_hard').
+   * @returns The corresponding React icon component for the given difficulty.
+   */
   const getDifficultyIcon = (difficulty: string) => {
     switch (difficulty) {
       case "easy":
@@ -104,6 +133,16 @@ export default function HashtagCompetitionAnalysis() {
     }
   };
 
+  /**
+   * Determines and returns a trend icon based on the provided direction.
+   *
+   * The function uses a switch statement to match the input `direction` against
+   * predefined cases ("rising", "falling", "stable") and returns the corresponding
+   * icon component with appropriate styling. If the direction does not match any of
+   * the known cases, it defaults to returning a stable trend icon.
+   *
+   * @param {string} direction - The trend direction for which to fetch the icon.
+   */
   const getTrendIcon = (direction: string) => {
     switch (direction) {
       case "rising":
@@ -117,6 +156,16 @@ export default function HashtagCompetitionAnalysis() {
     }
   };
 
+  /**
+   * Formats a number to a string representation with units (K or M).
+   *
+   * This function checks the magnitude of the input number and formats it accordingly:
+   * - If the number is 1,000,000 or greater, it converts the number to millions (M) with one decimal place.
+   * - If the number is 1,000 or greater but less than 1,000,000, it converts the number to thousands (K) with one decimal place.
+   * - Otherwise, it returns the number as a string without any conversion.
+   *
+   * @param num - The number to be formatted.
+   */
   const formatNumber = (num: number): string => {
     if (num >= 1000000) {
       return (num / 1000000).toFixed(1) + 'M';
@@ -126,6 +175,9 @@ export default function HashtagCompetitionAnalysis() {
     return num.toString();
   };
 
+  /**
+   * Formats a date string to a locale-specific short date and time format.
+   */
   const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -135,6 +187,9 @@ export default function HashtagCompetitionAnalysis() {
     });
   };
 
+  /**
+   * Handles the analysis of a hashtag by checking input, setting analysis state, and triggering a mutation.
+   */
   const handleAnalyzeHashtag = async () => {
     if (!searchHashtag.trim()) {
       toast.error("Please enter a hashtag to analyze");
