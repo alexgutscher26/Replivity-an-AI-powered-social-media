@@ -4,6 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { api } from "@/trpc/react";
 import { Hash, TrendingUp } from "lucide-react";
 
+/**
+ * Renders a card displaying hashtag usage statistics.
+ * Fetches data using `api.generations.getHashtagStats.useQuery` and displays either loading state or the actual stats.
+ *
+ * If data is still loading, it shows a loading message. Once loaded, it calculates the total number of hashtags
+ * generated and the percentage change from the previous month, displaying these values with appropriate styling
+ * based on whether the change is positive or negative.
+ */
 export default function HashtagUsage() {
   const { data: hashtagStats, isLoading } = api.generations.getHashtagStats.useQuery();
 
