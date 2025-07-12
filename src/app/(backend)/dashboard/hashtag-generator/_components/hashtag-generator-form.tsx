@@ -46,6 +46,16 @@ const tones = [
   { value: "inspirational", label: "Inspirational" },
 ];
 
+/**
+ * HashtagGeneratorForm component for generating hashtags based on user input.
+ *
+ * This component manages the state and form handling for generating hashtags. It uses a mutation to send user input
+ * to an API, processes the response to extract hashtags, and provides functionality to copy generated hashtags.
+ * The form includes fields for content, platform, tone, niche, count, and advanced options like platform optimization
+ * and inclusion of trending hashtags. The component also displays the generated hashtags and allows copying them.
+ *
+ * @returns React JSX element representing the HashtagGeneratorForm.
+ */
 export default function HashtagGeneratorForm() {
   const [generatedHashtags, setGeneratedHashtags] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -79,9 +89,28 @@ export default function HashtagGeneratorForm() {
     },
   });
 
+  /**
+   * Handles form submission to generate relevant hashtags based on user input.
+   *
+   * This function constructs a prompt for an AI system to generate hashtags,
+   * tailored to specific platform optimizations, content details, and user preferences.
+   * It then triggers a mutation to process the request.
+   *
+   * @param values - An object containing form data including platform, content, tone, count, niche, optimization preference, trending requirement, and competition level.
+   */
   const onSubmit = (values: HashtagFormValues) => {
     setIsGenerating(true);
     
+    /**
+     * Retrieves platform-specific optimization guidelines based on the given platform.
+     *
+     * This function returns an object containing the maximum length, optimal count of hashtags,
+     * characteristics to focus on, hashtags to avoid, and best practices for each supported platform.
+     * If the platform is not recognized, it defaults to Twitter's optimization guidelines.
+     *
+     * @param platform - The name of the social media platform (e.g., "twitter", "facebook").
+     * @returns An object with platform-specific optimization details.
+     */
     const getPlatformOptimization = (platform: string) => {
       switch (platform) {
         case "twitter":
@@ -168,18 +197,27 @@ Example format: #hashtag1 #hashtag2 #hashtag3`;
     });
   };
 
+  /**
+   * Extracts up to 30 hashtags from a given text using a regular expression.
+   */
   const parseHashtagsFromText = (text: string): string[] => {
     const hashtagRegex = /#[\w\d_]+/g;
     const matches = text.match(hashtagRegex) || [];
     return matches.slice(0, 30); // Limit to max 30 hashtags
   };
 
+  /**
+   * Copies an array of hashtags to the clipboard and shows a success toast notification.
+   */
   const copyHashtags = (hashtags: string[]) => {
     const hashtagText = hashtags.join(" ");
     navigator.clipboard.writeText(hashtagText);
     toast.success("Hashtags copied to clipboard!");
   };
 
+  /**
+   * Copies an individual hashtag to the clipboard and shows a success notification.
+   */
   const copyIndividualHashtag = (hashtag: string) => {
     navigator.clipboard.writeText(hashtag);
     toast.success(`${hashtag} copied to clipboard!`);
