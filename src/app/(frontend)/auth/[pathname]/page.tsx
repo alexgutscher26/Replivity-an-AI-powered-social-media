@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { api } from "@/trpc/server";
-import { AuthCard } from "@daveyplate/better-auth-ui";
+import { CustomAuthCard } from "@/components/auth/custom-auth-card";
 import { authViewPaths } from "@daveyplate/better-auth-ui/server";
 import { Command } from "lucide-react";
 import Link from "next/link";
@@ -39,7 +39,7 @@ export default async function AuthPage({
           </div>
         </Link>
         <div className="flex flex-col items-center gap-4">
-          <AuthCard pathname={pathname} />
+          <CustomAuthCard pathname={pathname} />
           <div className="text-muted-foreground hover:[&_a]:text-primary text-center text-xs text-balance [&_a]:underline [&_a]:underline-offset-4">
             By clicking continue, you agree to our{" "}
             <Link href="/terms">Terms of Service</Link> and{" "}

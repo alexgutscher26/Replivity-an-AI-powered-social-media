@@ -1,5 +1,6 @@
 import { Separator } from "@/components/ui/separator";
 import FacebookUsage from "./_components/facebook-usage";
+import HashtagUsage from "./_components/hashtag-usage";
 import LinkedinUsage from "./_components/linkedin-usage";
 import TotalUsage from "./_components/total-usage";
 import TwitterUsage from "./_components/twitter-usage";
@@ -16,11 +17,12 @@ export default async function DashboardPage() {
       </div>
       <Separator />
       <div className="grid gap-4">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
           <TotalUsage />
           <FacebookUsage />
           <TwitterUsage />
           <LinkedinUsage />
+          <HashtagUsage />
         </div>
         <div className="grid gap-4">
           <UsageOverview />

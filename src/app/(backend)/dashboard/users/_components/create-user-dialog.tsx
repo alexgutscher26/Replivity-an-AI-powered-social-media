@@ -24,12 +24,108 @@ import {
 import { authClient } from "@/server/auth/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, PlusCircle } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+
+// Password strength indicator component
+function PasswordStrengthIndicator({ password }: { password: string }) {
+  const requirements = useMemo(() => {
+    const checks = [
+      {
+        label: "At least 8 characters",
+        met: password.length >= 8,
+      },
+      {
+        label: "Contains uppercase letter",
+        met: /[A-Z]/.test(password),
+      },
+      {
+        label: "Contains lowercase letter",
+        met: /[a-z]/.test(password),
+      },
+      {
+        label: "Contains number",
+        met: /\d/.test(password),
+      },
+      {
+        label: "Contains special character",
+        met: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+      },
+      {
+        label: "No sequential characters",
+        met: !/(?:abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|012|123|234|345|456|567|678|789)/.test(
+          password.toLowerCase()
+        ),
+      },
+      {
+        label: "No repeated characters",
+        met: !/(.)\1{2,}/.test(password),
+      },
+    ];
+
+    // Common passwords check would be here but we're handling it server-side
+
+    return checks;
+  }, [password]);
+
+  const metRequirements = requirements.filter((req) => req.met).length;
+  const progress = (metRequirements / requirements.length) * 100;
+
+  const strengthText = useMemo(() => {
+    if (progress === 0) return "";
+    if (progress < 50) return "Weak";
+    if (progress < 80) return "Medium";
+    if (progress < 100) return "Strong";
+    return "Very Strong";
+  }, [progress]);
+
+  const strengthColor = useMemo(() => {
+    if (progress === 0) return "";
+    if (progress < 50) return "bg-red-500";
+    if (progress < 80) return "bg-yellow-500";
+    if (progress < 100) return "bg-green-500";
+    return "bg-green-600";
+  }, [progress]);
+
+  return (
+    <div className="mt-2 space-y-2">
+      <div className="flex items-center justify-between">
+        <Progress
+          value={progress}
+          className={cn("h-2", strengthColor)}
+          indicatorClassName={strengthColor}
+        />
+        <span className="ml-2 text-sm font-medium">{strengthText}</span>
+      </div>
+      <ul className="space-y-1 text-sm">
+        {requirements.map((req, i) => (
+          <li
+            key={i}
+            className={cn(
+              "flex items-center gap-1",
+              req.met ? "text-green-500" : "text-muted-foreground"
+            )}
+          >
+            <div
+              className={cn(
+                "h-1.5 w-1.5 rounded-full",
+                req.met ? "bg-green-500" : "bg-muted"
+              )}
+            />
+            {req.label}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export default function CreateUserDialog() {
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
+  const [password, setPassword] = useState("");
   const queryClient = useQueryClient();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -127,17 +223,22 @@ export default function CreateUserDialog() {
               />
             </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="password" className="text-right">
+            <div className="grid grid-cols-4 items-start gap-4">
+              <Label htmlFor="password" className="text-right pt-2">
                 Password
               </Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                className="col-span-3"
-                required
-              />
+              <div className="col-span-3 space-y-1">
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  className="w-full"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                {password && <PasswordStrengthIndicator password={password} />}
+              </div>
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">

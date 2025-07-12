@@ -488,4 +488,61 @@ Custom Prompt: ${customPrompt}`;
         currentMonth: now.toLocaleString("default", { month: "long" }),
       };
     }),
+
+  getHashtagStats: protectedProcedure
+    .input(
+      z
+        .object({
+          from: z.date().optional(),
+          to: z.date().optional(),
+          isSiteWide: z.boolean().optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const baseQuery = ctx.db
+        .select({
+          id: generations.id,
+          createdAt: generations.createdAt,
+        })
+        .from(generations)
+        .where(
+          and(
+            eq(generations.author, "AI Hashtag Generator"),
+            input?.isSiteWide
+              ? undefined
+              : eq(generations.userId, ctx.session.user.id),
+            input?.from && input?.to
+              ? and(
+                  gte(generations.createdAt, input.from),
+                  lte(generations.createdAt, input.to),
+                )
+              : undefined,
+          ),
+        );
+
+      const results = await baseQuery;
+
+      const oneMonthAgo = new Date();
+      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+      // Calculate totals
+      const total = results.length;
+
+      const previousTotal = results.filter(
+        (row) => (row.createdAt ?? new Date()) < oneMonthAgo,
+      ).length;
+
+      const percentageChange =
+        total === 0 && previousTotal === 0
+          ? 0
+          : previousTotal === 0
+            ? 100
+            : ((total - previousTotal) / previousTotal) * 100;
+
+      return {
+        total,
+        percentageChange,
+      };
+    }),
 });

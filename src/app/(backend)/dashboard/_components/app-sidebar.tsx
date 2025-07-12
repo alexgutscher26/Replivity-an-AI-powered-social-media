@@ -24,6 +24,7 @@ import {
   Users2,
   Sparkles,
   Crown,
+  Hash,
 } from "lucide-react";
 import Link from "next/link";
 import { type ComponentProps, useMemo } from "react";
@@ -57,6 +58,11 @@ const SIDEBAR_DATA: SidebarData = {
       url: "/dashboard",
       icon: LayoutDashboard,
     },
+    // {
+    //   title: "Hashtag Generator",
+    //   url: "/dashboard/hashtag-generator",
+    //   icon: Hash,
+    // },
     {
       title: "Reports",
       url: "/dashboard/reports",
