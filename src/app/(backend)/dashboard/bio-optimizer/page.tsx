@@ -1,5 +1,8 @@
 import { BioProfileOptimizer } from "./_components/bio-profile-optimizer";
 
+/**
+ * Renders the Bio & Profile Optimizer page with a header and the BioProfileOptimizer component.
+ */
 export default function BioOptimizerPage() {
   return (
     <div className="container mx-auto py-6">

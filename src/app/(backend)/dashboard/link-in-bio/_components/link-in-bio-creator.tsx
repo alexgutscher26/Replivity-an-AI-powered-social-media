@@ -173,6 +173,19 @@ const linkTemplates = [
   { title: "Join My Community", url: "https://discord.gg/yourcommunity", icon: "users" },
 ];
 
+/**
+ * This React component represents a form for creating and managing a link-in-bio page.
+ * It includes tabs for configuring links, social media, customization options,
+ * and previewing the generated page with analytics and QR code.
+ *
+ * @component LinkInBioForm
+ * @param {Object} props - The component props.
+ * @param {Function} onSubmit - Callback function to handle form submission.
+ * @param {Function} onGeneratePreview - Callback function to generate a preview of the link-in-bio page.
+ * @param {Boolean} isGenerating - Boolean indicating if the page generation process is ongoing.
+ * @param {Object} preview - Object containing the generated page preview data.
+ * @returns {JSX.Element} The JSX element representing the form and its components.
+ */
 export function LinkInBioCreator() {
   const { user } = useSession();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -226,6 +239,9 @@ export function LinkInBioCreator() {
     name: "links",
   });
 
+  /**
+   * Appends a new link with default values to the list of links.
+   */
   const addLink = () => {
     appendLink({
       id: Date.now().toString(),
@@ -238,6 +254,9 @@ export function LinkInBioCreator() {
     });
   };
 
+  /**
+   * Adds a new link with template data to the list.
+   */
   const addTemplateLink = (template: typeof linkTemplates[0]) => {
     appendLink({
       id: Date.now().toString(),
@@ -250,6 +269,15 @@ export function LinkInBioCreator() {
     });
   };
 
+  /**
+   * Generates a preview of a link-in-bio page based on provided form values.
+   *
+   * This function simulates an API call with a delay, generates mock preview data,
+   * and updates the state with the generated preview. It handles errors by displaying
+   * an error message and ensures that the loading state is properly managed.
+   *
+   * @param data - The form values containing link information.
+   */
   const generatePreview = async (data: LinkInBioFormValues) => {
     setIsGenerating(true);
     
@@ -294,11 +322,17 @@ export function LinkInBioCreator() {
     }
   };
 
+  /**
+   * Copies the provided text to the clipboard and shows a success notification.
+   */
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard!");
   };
 
+  /**
+   * Exports form data as a JSON file with metadata.
+   */
   const exportPage = () => {
     const data = form.getValues();
     const exportData = {
@@ -323,6 +357,9 @@ export function LinkInBioCreator() {
     toast.success("Page exported successfully!");
   };
 
+  /**
+   * Generates a preview for the provided link in bio form values.
+   */
   const onSubmit = async (data: LinkInBioFormValues) => {
     await generatePreview(data);
   };
