@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   description: "Test different profile variations and compare their performance",
 };
 
+/**
+ * Renders the A/B testing page with a heading and ABTestingTool component.
+ */
 export default function ABTestingPage() {
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
