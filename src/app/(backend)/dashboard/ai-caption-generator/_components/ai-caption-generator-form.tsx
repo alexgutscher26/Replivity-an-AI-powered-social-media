@@ -46,6 +46,16 @@ const TONE_OPTIONS = [
   "Question",
 ];
 
+/**
+ * AI Caption Generator Form Component.
+ *
+ * This component provides a form for users to upload an image and generate a caption based on their preferences.
+ * It includes fields for selecting the platform, tone, context, hashtags, and mentions. After generating the caption,
+ * users can copy it to clipboard or download it as a text file.
+ *
+ * The component manages the state of uploaded images, generated captions, and loading states using React hooks.
+ * It utilizes form validation with Zod resolver and API calls for generating captions using TanStack Query.
+ */
 export function AiCaptionGeneratorForm() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [generatedCaption, setGeneratedCaption] = useState<string | null>(null);
@@ -86,6 +96,14 @@ export function AiCaptionGeneratorForm() {
     },
   });
 
+  /**
+   * Handles the uploading of a single image file from a FileList.
+   *
+   * It first checks if the files are present and valid, then validates the file type to be an image and ensures the file size does not exceed 4MB.
+   * If any validation fails, it shows an error message using `toast`.
+   *
+   * @param files - A FileList containing the files to be uploaded.
+   */
   const handleImageUpload = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
@@ -107,6 +125,15 @@ export function AiCaptionGeneratorForm() {
     await startUpload([file]);
   };
 
+  /**
+   * Handles form submission for generating a caption.
+   *
+   * This function first checks if an image has been uploaded. If not, it displays an error message.
+   * It then sets the state to indicate that the caption is being generated.
+   * Based on user input, it constructs a prompt for the AI, including context, hashtags, mentions,
+   * and platform-specific formatting requirements.
+   * Finally, it triggers the mutation to generate the caption using the provided data and uploaded image link.
+   */
   const onSubmit = async (data: CaptionGeneratorFormValues) => {
     if (!uploadedImage) {
       toast.error("Please upload an image first.");
@@ -143,6 +170,12 @@ Make the caption platform-appropriate, engaging, and properly formatted with nat
     });
   };
 
+  /**
+   * Copies the generated caption to the clipboard.
+   *
+   * This function checks if a `generatedCaption` exists. If it does, it attempts to write the caption to the clipboard using the `navigator.clipboard.writeText()` method.
+   * Upon success, a success toast notification is displayed. If an error occurs during the copy operation, an error toast notification is shown instead.
+   */
   const copyToClipboard = async () => {
     if (!generatedCaption) return;
     
@@ -154,6 +187,9 @@ Make the caption platform-appropriate, engaging, and properly formatted with nat
     }
   };
 
+  /**
+   * Downloads the generated caption as a text file named "caption.txt".
+   */
   const downloadCaption = () => {
     if (!generatedCaption) return;
     
