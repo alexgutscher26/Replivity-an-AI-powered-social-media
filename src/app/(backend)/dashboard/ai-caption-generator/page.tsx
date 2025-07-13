@@ -1,6 +1,9 @@
 import { Separator } from "@/components/ui/separator";
 import { AiCaptionGeneratorForm } from "./_components/ai-caption-generator-form";
 
+/**
+ * Renders the AI Caption Generator page with a title, description, separator, and form.
+ */
 export default function AiCaptionGeneratorPage() {
   return (
     <div className="flex-1 space-y-6 p-10 pb-16">
