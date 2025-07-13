@@ -4,6 +4,7 @@ import { OtherSessionsUserCardSettingsForm } from "@/app/(backend)/dashboard/set
 import { UpdateUserEmailSettingsForm } from "@/app/(backend)/dashboard/settings/profile/_components/update-user-email-settings";
 import { UpdateUserPasswordSettingsForm } from "@/app/(backend)/dashboard/settings/profile/_components/update-user-password-settings";
 import { UpdateUserProfileSettingsForm } from "@/app/(backend)/dashboard/settings/profile/_components/update-user-profile-settings-form";
+
 import { Separator } from "@/components/ui/separator";
 
 export default async function ProfileSettingsPage() {
@@ -17,6 +18,7 @@ export default async function ProfileSettingsPage() {
       </div>
       <Separator />
       <UpdateUserProfileSettingsForm />
+
       <UpdateUserEmailSettingsForm />
       <UpdateUserPasswordSettingsForm />
       <ActiveSessionUserCardSettingsForm />

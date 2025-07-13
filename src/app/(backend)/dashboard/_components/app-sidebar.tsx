@@ -25,9 +25,11 @@ import {
   Users2,
   Sparkles,
   Crown,
-  Hash,
+  User,
+  Link,
+  BarChart3,
+  TrendingUp,
 } from "lucide-react";
-import Link from "next/link";
 import { type ComponentProps, useMemo } from "react";
 import NavMain from "./nav-main";
 import NavSecondary from "./nav-secondary";
@@ -64,6 +66,26 @@ const SIDEBAR_DATA: SidebarData = {
       url: "/dashboard/ai-caption-generator",
       icon: ImageIcon,
     },
+    {
+      title: "Bio & Profile Optimizer",
+      url: "/dashboard/bio-optimizer",
+      icon: User,
+    },
+    // TODO: Need to fix / completely add full functionality    {
+    //   title: "Link-in-Bio Creator",
+    //   url: "/dashboard/link-in-bio",
+    //   icon: Link,
+    // },
+    // {
+    //   title: "Profile Audit & Suggestions",
+    //   url: "/dashboard/profile-audit",
+    //   icon: BarChart3,
+    // },
+    // {
+    //   title: "A/B Testing for Profiles",
+    //   url: "/dashboard/ab-testing",
+    //   icon: TrendingUp,
+    // },
     // {
     //   title: "Hashtag Generator",
     //   url: "/dashboard/hashtag-generator",

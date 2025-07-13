@@ -38,12 +38,6 @@
     - [X] Brand voice customization
     - [X] Multiple caption variations
     - [X] Platform-specific formatting
-  - [ ] Trend Analysis Tool
-    - [ ] Real-time trending topics
-    - [ ] Industry-specific trends
-    - [ ] Competitor trend tracking
-    - [ ] Viral content analyzer
-    - [ ] Trend prediction algorithms
   - [ ] Content Templates Library
     - [ ] Industry-specific templates
     - [ ] Customizable post templates
@@ -56,12 +50,12 @@
     - [ ] Multiple style variations
     - [ ] Image editing and enhancement
     - [ ] Stock photo integration
-  - [ ] Bio & Profile Optimizer
-    - [ ] Platform-specific bio optimization
-    - [ ] Keyword optimization for profiles
-    - [ ] Link-in-bio page creator
-    - [ ] Profile audit and suggestions
-    - [ ] A/B testing for profiles
+  - [X] Bio & Profile Optimizer
+    - [X] Platform-specific bio optimization
+    - [X] Keyword optimization for profiles
+    - [X] Link-in-bio page creator
+    - [X] Profile audit and suggestions
+    - [X] A/B testing for profiles
   - [ ] Content Idea Generator
     - [ ] AI-powered content suggestions
     - [ ] Industry-specific content ideas
