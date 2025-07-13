@@ -34,11 +34,10 @@
     - [X] Custom hashtag sets and templates
     - [X] Hashtag competition analysis
   - [x] AI Caption Generator
-    - [ ] Image-to-caption generation
-    - [ ] Brand voice customization
-    - [ ] Multiple caption variations
-    - [ ] Platform-specific formatting
-    - [ ] Emoji and tone suggestions
+    - [X] Image-to-caption generation
+    - [X] Brand voice customization
+    - [X] Multiple caption variations
+    - [X] Platform-specific formatting
   - [ ] Trend Analysis Tool
     - [ ] Real-time trending topics
     - [ ] Industry-specific trends

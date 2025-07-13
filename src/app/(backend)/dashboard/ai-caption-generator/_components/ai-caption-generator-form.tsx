@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -18,12 +22,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const captionGeneratorSchema = z.object({
-  image: z.instanceof(FileList).optional(),
+  image: typeof window !== 'undefined' ? z.instanceof(FileList).optional() : z.any().optional(),
   platform: z.enum(["twitter", "facebook", "linkedin", "instagram"]),
   tone: z.string().min(1, "Please select a tone"),
   context: z.string().optional(),
   hashtags: z.boolean().default(true),
   mentions: z.boolean().default(false),
+  variations: z.number().min(1).max(5).default(3),
 });
 
 type CaptionGeneratorFormValues = z.infer<typeof captionGeneratorSchema>;
@@ -46,15 +51,74 @@ const TONE_OPTIONS = [
   "Question",
 ];
 
+const platformFormatting = {
+  twitter: {
+    description: "Twitter/X Post Formatting",
+    rules: [
+      "Keep under 280 characters total",
+      "Use 1-2 line breaks maximum for readability",
+      "Place hashtags at the end (2-3 max)",
+      "Use emojis sparingly (1-2 max)",
+      "Write in a conversational, engaging tone",
+      "Include a clear call-to-action if appropriate",
+      "Use threading format if content is longer"
+    ],
+    example: "Just discovered this amazing view! 🌅\n\nSometimes the best moments are unplanned.\n\n#photography #sunrise #nature"
+  },
+  facebook: {
+    description: "Facebook Post Formatting",
+    rules: [
+      "Use natural paragraph breaks (2-3 paragraphs max)",
+      "Start with an engaging hook or question",
+      "Include emojis to break up text (3-5 max)",
+      "Place hashtags mid-text or at the end (5-10 max)",
+      "Encourage engagement with questions",
+      "Use storytelling format when appropriate",
+      "Keep paragraphs short (2-3 sentences each)"
+    ],
+    example: "What a perfect morning! ☀️\n\nThere's something magical about watching the world wake up. This view reminded me why I love early morning walks.\n\nWhat's your favorite time of day? 🤔\n\n#morningvibes #nature #photography #peaceful"
+  },
+  linkedin: {
+    description: "LinkedIn Post Formatting",
+    rules: [
+      "Start with a professional hook or insight",
+      "Use clear paragraph structure (3-4 paragraphs max)",
+      "Include professional insights or lessons learned",
+      "Use minimal emojis (1-2 max, professional ones)",
+      "Place hashtags at the end (3-5 relevant industry tags)",
+      "Include a call-to-action for professional engagement",
+      "Focus on value, learning, or industry relevance"
+    ],
+    example: "Leadership lesson from an unexpected place.\n\nThis morning's sunrise reminded me of the importance of perspective in business. Sometimes we need to step back and see the bigger picture.\n\nIn my experience, the best solutions often come when we pause and reflect rather than rushing forward.\n\nWhat helps you gain perspective in challenging situations?\n\n#leadership #business #perspective #growth #mindset"
+  },
+  instagram: {
+    description: "Instagram Post Formatting",
+    rules: [
+      "Use engaging line breaks for visual appeal",
+      "Include relevant emojis throughout (5-10 max)",
+      "Place hashtags at the end or in first comment (20-30 max)",
+      "Use storytelling or behind-the-scenes content",
+      "Include location tags when relevant",
+      "Encourage engagement with questions or CTAs",
+      "Use Instagram-specific language and trends"
+    ],
+    example: "Golden hour magic ✨\n\n📍 Captured this breathtaking moment during my morning hike\n\n🌅 There's something so peaceful about watching the world wake up\n\n💭 These quiet moments remind me to slow down and appreciate the beauty around us\n\nWhat's your favorite way to start the day? 👇\n\n#goldenhour #sunrise #hiking #nature #peaceful #morningvibes #photography #landscape #mindfulness #gratitude"
+  }
+};
+
 export function AiCaptionGeneratorForm() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [generatedCaption, setGeneratedCaption] = useState<string | null>(null);
+  const [generatedCaptions, setGeneratedCaptions] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedCaptionIndex, setSelectedCaptionIndex] = useState<number>(0);
+
+  // Fetch user's brand voice settings
+  const { data: accountSettings } = api.settings.account.useQuery();
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: (res) => {
-      if (res?.[0]) {
-        setUploadedImage(res[0].url);
+      if (res?.[0]?.serverData?.fileUrl && typeof res[0].serverData.fileUrl === 'string') {
+        setUploadedImage(res[0].serverData.fileUrl);
         toast.success("Image uploaded successfully!");
       }
     },
@@ -71,12 +135,19 @@ export function AiCaptionGeneratorForm() {
       context: "",
       hashtags: true,
       mentions: false,
+      variations: 3,
     },
   });
 
   const generateCaption = api.generations.generate.useMutation({
     onSuccess: (data) => {
-      setGeneratedCaption(data.text);
+      // Split the result into multiple captions
+      const captions = data.text
+        .split('---VARIATION---')
+        .map(caption => caption.trim())
+        .filter(caption => caption.length > 0);
+
+      setGeneratedCaptions(captions.length > 0 ? captions : [data.text]);
       setIsGenerating(false);
       toast.success("Caption generated successfully!");
     },
@@ -86,7 +157,7 @@ export function AiCaptionGeneratorForm() {
     },
   });
 
-  const handleImageUpload = async (files: FileList | null) => {
+  const handleImageUpload = async (files: FileList | null | undefined) => {
     if (!files || files.length === 0) return;
 
     const file = files[0];
@@ -114,29 +185,73 @@ export function AiCaptionGeneratorForm() {
     }
 
     setIsGenerating(true);
+    setGeneratedCaptions([]);
+    setSelectedCaptionIndex(0);
+
+    // Build brand voice context from user settings
+    let brandVoiceContext = "";
+    if (accountSettings && !accountSettings.customPrompt) {
+      const brandParts = [];
+      
+      if (accountSettings.brandName) {
+        brandParts.push(`Brand: ${accountSettings.brandName}`);
+      }
+      
+      if (accountSettings.brandPersonality) {
+        brandParts.push(`Brand Personality: ${accountSettings.brandPersonality}`);
+      }
+      
+      if (accountSettings.brandTone && accountSettings.brandTone !== "professional") {
+        if (accountSettings.brandTone === "custom" && accountSettings.customTone) {
+          brandParts.push(`Brand Tone: ${accountSettings.customTone}`);
+        } else {
+          brandParts.push(`Brand Tone: ${accountSettings.brandTone}`);
+        }
+      }
+      
+      if (accountSettings.brandValues) {
+        brandParts.push(`Brand Values: ${accountSettings.brandValues}`);
+      }
+      
+      if (accountSettings.targetAudience) {
+        brandParts.push(`Target Audience: ${accountSettings.targetAudience}`);
+      }
+      
+      if (accountSettings.brandKeywords) {
+        brandParts.push(`Include these keywords naturally: ${accountSettings.brandKeywords}`);
+      }
+      
+      if (accountSettings.avoidKeywords) {
+        brandParts.push(`Avoid these keywords: ${accountSettings.avoidKeywords}`);
+      }
+      
+      if (brandParts.length > 0) {
+        brandVoiceContext = `\n\nBRAND VOICE GUIDELINES:\n${brandParts.join('\n')}`;
+      }
+    }
 
     // Create a prompt for the AI based on the image and user preferences
     const contextText = data.context ? ` Additional context: ${data.context}` : "";
     const hashtagText = data.hashtags ? " Include relevant hashtags." : " Do not include hashtags.";
     const mentionText = data.mentions ? " Include relevant mentions if appropriate." : " Do not include mentions.";
     
-    const platformFormatting = {
-      twitter: "Format like a real tweet with natural line breaks. Use 1-2 line breaks for readability. Keep it under 280 characters.",
-      facebook: "Format with natural paragraph breaks. Use line breaks to separate thoughts and make it easy to read.",
-      linkedin: "Format professionally with clear paragraph structure. Use line breaks to organize ideas logically.",
-      instagram: "Format with engaging line breaks. Use emojis and line breaks to create visual appeal and readability."
-    };
+    // Get platform-specific formatting rules
+    const selectedPlatform = platformFormatting[data.platform];
+    const formattingRules = selectedPlatform.rules.join('\n• ');
     
-    const prompt = `Generate an engaging ${data.tone.toLowerCase()} caption for this image that will be posted on ${data.platform}. The image is uploaded and available for analysis.${contextText}${hashtagText}${mentionText}
+    // Use custom prompt if available, otherwise use brand voice + standard prompt
+    let basePrompt;
+    if (accountSettings?.customPrompt) {
+      basePrompt = `${accountSettings.customPrompt}\n\nImage context: Generate a caption for this uploaded image for ${data.platform}.${contextText}${hashtagText}${mentionText}\n\nPLATFORM-SPECIFIC FORMATTING REQUIREMENTS:\n• ${formattingRules}\n\nExample format:\n${selectedPlatform.example}`;
+    } else {
+      basePrompt = `Generate an engaging ${data.tone.toLowerCase()} caption for this image that will be posted on ${data.platform}. The image is uploaded and available for analysis.${contextText}${hashtagText}${mentionText}${brandVoiceContext}\n\n${selectedPlatform.description.toUpperCase()} REQUIREMENTS:\n• ${formattingRules}\n\nExample format for reference:\n${selectedPlatform.example}\n\nMake the caption platform-appropriate, engaging, and properly formatted with natural line breaks that make it look like a real social media post. Follow the brand voice guidelines above to ensure consistency with the brand's personality and values.`;
+    }
 
-IMPORTANT FORMATTING REQUIREMENTS:
-${platformFormatting[data.platform as keyof typeof platformFormatting]}
-
-Make the caption platform-appropriate, engaging, and properly formatted with natural line breaks that make it look like a real social media post.`;
+    const finalPrompt = `${basePrompt}\n\nPlease generate exactly ${data.variations} different caption variations. Each variation should be unique and creative while maintaining the same tone and requirements. Separate each variation with "---VARIATION---" on a new line.`;
 
     generateCaption.mutate({
       source: data.platform,
-      post: prompt,
+      post: finalPrompt,
       tone: data.tone,
       type: "status",
       link: uploadedImage,
@@ -144,10 +259,11 @@ Make the caption platform-appropriate, engaging, and properly formatted with nat
   };
 
   const copyToClipboard = async () => {
-    if (!generatedCaption) return;
+    const currentCaption = generatedCaptions[selectedCaptionIndex];
+    if (!currentCaption) return;
     
     try {
-      await navigator.clipboard.writeText(generatedCaption);
+      await navigator.clipboard.writeText(currentCaption);
       toast.success("Caption copied to clipboard.");
     } catch (error) {
       toast.error("Failed to copy caption to clipboard.");
@@ -155,9 +271,10 @@ Make the caption platform-appropriate, engaging, and properly formatted with nat
   };
 
   const downloadCaption = () => {
-    if (!generatedCaption) return;
+    const currentCaption = generatedCaptions[selectedCaptionIndex];
+    if (!currentCaption) return;
     
-    const blob = new Blob([generatedCaption], { type: "text/plain" });
+    const blob = new Blob([currentCaption], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -202,7 +319,8 @@ Make the caption platform-appropriate, engaging, and properly formatted with nat
                     size="sm"
                     onClick={() => {
                       setUploadedImage(null);
-                      setGeneratedCaption(null);
+                      setGeneratedCaptions([]);
+                      setSelectedCaptionIndex(0);
                     }}
                   >
                     Upload Different Image
@@ -253,26 +371,47 @@ Make the caption platform-appropriate, engaging, and properly formatted with nat
               <FormField
                 control={form.control}
                 name="platform"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Platform</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select platform" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {PLATFORM_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  const selectedPlatform = platformFormatting[field.value];
+                  return (
+                    <FormItem>
+                      <FormLabel>Platform</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select platform" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {PLATFORM_OPTIONS.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {selectedPlatform && (
+                        <div className="mt-2 p-3 bg-muted/50 rounded-lg border">
+                          <p className="text-sm font-medium text-foreground mb-2">
+                            {selectedPlatform.description}
+                          </p>
+                          <div className="text-xs text-muted-foreground space-y-1">
+                            <p className="font-medium">Formatting Guidelines:</p>
+                            <ul className="list-disc list-inside space-y-0.5 ml-2">
+                              {selectedPlatform.rules.slice(0, 3).map((rule, index) => (
+                                <li key={index}>{rule}</li>
+                              ))}
+                              {selectedPlatform.rules.length > 3 && (
+                                <li className="text-muted-foreground/70">+ {selectedPlatform.rules.length - 3} more guidelines</li>
+                              )}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
 
               <FormField
@@ -362,6 +501,37 @@ Make the caption platform-appropriate, engaging, and properly formatted with nat
                 />
               </div>
 
+              <FormField
+                control={form.control}
+                name="variations"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Caption Variations</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(parseInt(value))}
+                      defaultValue={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select number of variations" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="1">1 variation</SelectItem>
+                        <SelectItem value="2">2 variations</SelectItem>
+                        <SelectItem value="3">3 variations</SelectItem>
+                        <SelectItem value="4">4 variations</SelectItem>
+                        <SelectItem value="5">5 variations</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Choose how many different caption variations to generate
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <Button
                 type="submit"
                 disabled={!uploadedImage || isGenerating}
@@ -396,10 +566,24 @@ Make the caption platform-appropriate, engaging, and properly formatted with nat
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {generatedCaption ? (
+          {generatedCaptions.length > 0 ? (
             <div className="space-y-4">
+              {generatedCaptions.length > 1 && (
+                <div className="flex gap-2 flex-wrap">
+                  {generatedCaptions.map((_, index) => (
+                    <Button
+                      key={index}
+                      variant={selectedCaptionIndex === index ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setSelectedCaptionIndex(index)}
+                    >
+                      Variation {index + 1}
+                    </Button>
+                  ))}
+                </div>
+              )}
               <div className="p-4 bg-muted rounded-lg">
-                <p className="whitespace-pre-wrap">{generatedCaption}</p>
+                <p className="whitespace-pre-wrap">{generatedCaptions[selectedCaptionIndex]}</p>
               </div>
               <div className="flex gap-2">
                 <Button onClick={copyToClipboard} variant="outline" size="sm">

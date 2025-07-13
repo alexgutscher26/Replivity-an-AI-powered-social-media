@@ -451,8 +451,28 @@ export const customPromptSchema = z.object({
 });
 export type CustomPromptFormValues = z.infer<typeof customPromptSchema>;
 
+export const brandVoiceSchema = z.object({
+  brandName: z.string().default(""),
+  brandPersonality: z.string().default(""),
+  brandTone: z.enum(["professional", "casual", "friendly", "authoritative", "playful", "inspirational", "custom"]).default("professional"),
+  customTone: z.string().default(""),
+  brandValues: z.string().default(""),
+  targetAudience: z.string().default(""),
+  brandKeywords: z.string().default(""),
+  avoidKeywords: z.string().default(""),
+});
+export type BrandVoiceFormValues = z.infer<typeof brandVoiceSchema>;
+
 export const accountSettingsSchema = z.object({
   customPrompt: z.string().default(""),
+  brandName: z.string().default(""),
+  brandPersonality: z.string().default(""),
+  brandTone: z.enum(["professional", "casual", "friendly", "authoritative", "playful", "inspirational", "custom"]).default("professional"),
+  customTone: z.string().default(""),
+  brandValues: z.string().default(""),
+  targetAudience: z.string().default(""),
+  brandKeywords: z.string().default(""),
+  avoidKeywords: z.string().default(""),
 });
 export type AccountSettingsFormValues = z.infer<typeof accountSettingsSchema>;
 
