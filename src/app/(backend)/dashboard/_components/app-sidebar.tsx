@@ -17,6 +17,7 @@ import {
   ChartArea,
   Command,
   FileChartLine,
+  ImageIcon,
   LayoutDashboard,
   LifeBuoy,
   PieChart,
@@ -57,6 +58,11 @@ const SIDEBAR_DATA: SidebarData = {
       title: "Dashboard",
       url: "/dashboard",
       icon: LayoutDashboard,
+    },
+    {
+      title: "AI Caption Generator",
+      url: "/dashboard/ai-caption-generator",
+      icon: ImageIcon,
     },
     // {
     //   title: "Hashtag Generator",
