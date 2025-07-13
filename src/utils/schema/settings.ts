@@ -479,6 +479,7 @@ export type AccountSettingsFormValues = z.infer<typeof accountSettingsSchema>;
 export const supportFormSchema = z.object({
   subject: z.string().min(1, "Subject is required"),
   message: z.string().min(1, "Message is required"),
+  category: z.string().nullable().optional(),
 });
 export type SupportFormValues = z.infer<typeof supportFormSchema>;
 

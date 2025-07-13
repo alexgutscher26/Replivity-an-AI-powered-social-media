@@ -57,9 +57,10 @@ import {
   Linkedin,
   Facebook,
   Youtube,
-  Tiktok,
+
   Sparkles,
   Download,
+  Video,
   RefreshCw,
   ExternalLink,
   Image as ImageIcon,
@@ -201,7 +202,7 @@ const platformConfig = {
   },
   tiktok: {
     name: "TikTok",
-    icon: Tiktok,
+    icon: Video,
     color: "#000000",
     urlPattern: /^https?:\/\/(www\.)?tiktok\.com\/@[a-zA-Z0-9_.]+\/?$/,
     metrics: ["followers", "videos", "likes", "views"],
