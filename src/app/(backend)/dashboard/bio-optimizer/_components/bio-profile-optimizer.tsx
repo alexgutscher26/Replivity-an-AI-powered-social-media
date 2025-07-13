@@ -96,6 +96,17 @@ interface KeywordAnalysis {
   }[];
 }
 
+/**
+ * BioOptimizer Component
+ *
+ * This React component provides a comprehensive tool for optimizing social media bios.
+ * It includes features such as keyword analysis, SEO insights, and platform-specific bio suggestions.
+ * Users can input their current bio and receive recommendations to improve visibility and engagement.
+ *
+ * @component
+ * @name BioOptimizer
+ * @description A React component for optimizing social media bios with keyword analysis and platform-specific suggestions.
+ */
 export function BioProfileOptimizer() {
   const { user } = useSession();
   const [isOptimizing, setIsOptimizing] = useState(false);
@@ -297,6 +308,9 @@ export function BioProfileOptimizer() {
     }
   };
 
+  /**
+   * Toggles a goal in the selected goals array and updates form value.
+   */
   const toggleGoal = (goal: string) => {
     const newGoals = selectedGoals.includes(goal)
       ? selectedGoals.filter(g => g !== goal)
@@ -305,6 +319,19 @@ export function BioProfileOptimizer() {
     form.setValue("goals", newGoals);
   };
 
+  /**
+   * Analyzes a given biography to provide SEO-related insights and optimization suggestions.
+   *
+   * This function processes the input biography to identify current keywords, suggest relevant industry-specific
+   * and platform-specific keywords, determine missing keywords, calculate keyword density, and generate an SEO score.
+   * It also provides competitor keywords and optimization suggestions based on the analysis.
+   *
+   * @param bio - A string representing the biography text to analyze.
+   * @param industry - A string indicating the industry associated with the biography.
+   * @param platform - A string indicating the platform where the biography will be used.
+   * @returns An object containing suggested keywords, current keywords, missing keywords, keyword density,
+   *          SEO score, competitor keywords, and optimization suggestions.
+   */
   const analyzeKeywords = (bio: string, industry: string, platform: string): KeywordAnalysis => {
     const words = bio.toLowerCase().split(/\W+/).filter(word => word.length > 2);
     const currentKeywords = [...new Set(words)];
@@ -391,6 +418,18 @@ export function BioProfileOptimizer() {
     };
   };
 
+  /**
+   * Optimizes a user's bio by adding high-priority keywords if there is space available.
+   *
+   * This function checks if the provided bio can accommodate up to three high-priority keywords
+   * from the given list, based on the character limit defined for the specified platform.
+   * It ensures that each keyword is added only if it is not already present in the bio and
+   * does not exceed the overall character limit.
+   *
+   * @param bio - The original biography text of the user.
+   * @param keywords - An array of keywords to be considered for optimization.
+   * @param platform - The platform for which the bio is being optimized, affecting the character limit.
+   */
   const optimizeKeywordsInBio = (bio: string, keywords: string[], platform: string): string => {
     let optimizedBio = bio;
     const config = platformConfig[platform as keyof typeof platformConfig];
@@ -411,6 +450,17 @@ export function BioProfileOptimizer() {
     return optimizedBio;
   };
 
+  /**
+   * Generates platform-specific optimized bios based on provided data and base content.
+   *
+   * The function analyzes keywords relevant to the industry and target audience, then generates multiple bio options tailored to different platforms.
+   * Each bio is optimized with specific improvements and scores, including SEO metrics. A default generic option is also added for all platforms.
+   *
+   * @param data - An object containing form values such as current bio, industry, platform, and other relevant details.
+   * @param baseContent - The initial content string used as a basis for generating bios.
+   * @param limit - Optional parameter to limit the number of generated bios (default is undefined).
+   * @returns An array of optimized bios with various improvements and SEO metrics.
+   */
   const generatePlatformSpecificBios = (data: BioOptimizerFormValues, baseContent: string, limit?: number): OptimizedBio[] => {
     const bios: OptimizedBio[] = [];
     
@@ -535,6 +585,17 @@ export function BioProfileOptimizer() {
     return bios;
   };
 
+  /**
+   * Analyzes a given biography text based on platform-specific rules and universal best practices.
+   *
+   * The function evaluates the bio's length, content (including emojis, URLs, call-to-actions),
+   * and suggests improvements or warnings accordingly. It categorizes suggestions into warnings,
+   * improvements, and successes based on the analysis of different elements present in the bio.
+   *
+   * @param bio - The biography text to be analyzed.
+   * @param platform - The social media platform for which the bio is being analyzed (e.g., 'linkedin', 'instagram').
+   * @returns An array of optimization suggestions with types, titles, descriptions, and examples where applicable.
+   */
   const analyzeBio = (bio: string, platform: string) => {
     const suggestions: OptimizationSuggestion[] = [];
     const config = platformConfig[platform as keyof typeof platformConfig];
@@ -667,6 +728,11 @@ export function BioProfileOptimizer() {
     return suggestions;
   };
 
+  /**
+   * Optimizes a user's bio based on platform-specific configurations and constraints.
+   * The function simulates AI optimization, generates platform-specific bios,
+   * ensures they fit within character limits, and updates the state with optimized bios and suggestions.
+   */
   const generateOptimizedBios = async (data: BioOptimizerFormValues) => {
     setIsOptimizing(true);
     
@@ -702,11 +768,21 @@ export function BioProfileOptimizer() {
     }
   };
 
+  /**
+   * Copies text to the clipboard and shows a success notification.
+   */
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard!");
   };
 
+  /**
+   * Handles form submission for bio optimization.
+   *
+   * This function processes the form data, generates keyword analysis,
+   * provides optimization suggestions, and creates optimized bios.
+   * It also manages the UI state during the process and handles any errors.
+   */
   const onSubmit = async (data: BioOptimizerFormValues) => {
     setIsOptimizing(true);
     setSuggestions([]);
