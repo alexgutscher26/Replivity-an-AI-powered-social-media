@@ -62,6 +62,20 @@ const SUPPORT_CATEGORIES = [
 
 type SupportCategory = typeof SUPPORT_CATEGORIES[number]["id"];
 
+/**
+ * Support Dialog Component
+ *
+ * This component renders a dialog for users to submit support requests. It includes fields for subject and message,
+ * category selection, and priority indication. The form is validated both client-side and server-side, with appropriate
+ * error handling and success notifications. The dialog can be opened or closed based on the `open` prop, and it resets
+ * its state when opening or closing.
+ *
+ * @param open - A boolean indicating whether the dialog should be open or closed.
+ * @param onOpenChange - A callback function to handle changes in the open state of the dialog.
+ * @param initialValues - Initial values for the form fields (optional).
+ * @param onSuccess - A callback function to execute upon successful submission of a support request (optional).
+ * @param priority - The priority level of the support request, defaulting to "medium" if not provided.
+ */
 export default function SupportDialog({
   open,
   onOpenChange,
@@ -207,6 +221,17 @@ export default function SupportDialog({
     }
   }, [form]);
 
+  /**
+   * Determines the color class based on the current character count relative to specified max and min values.
+   *
+   * The function checks if the current count is below an optional minimum threshold, returning 'text-red-500' if true.
+   * If the current count exceeds 90% of the maximum threshold, it returns 'text-yellow-600'.
+   * Otherwise, it defaults to 'text-muted-foreground'.
+   *
+   * @param {number} current - The current character count.
+   * @param {number} max - The maximum allowable character count.
+   * @param {number} [min] - An optional minimum threshold for the character count.
+   */
   const getCharacterCountColor = (current: number, max: number, min?: number) => {
     if (min && current < min) return "text-red-500";
     if (current > max * 0.9) return "text-yellow-600";
