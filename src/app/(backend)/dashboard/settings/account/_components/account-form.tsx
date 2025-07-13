@@ -30,6 +30,15 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+/**
+ * Account settings form component.
+ *
+ * This component fetches account settings using a query and provides a form for users to update their brand voice customization,
+ * custom prompt, and other related fields. It handles form submission by updating the account settings through a mutation
+ * and provides feedback on success or error. The form dynamically updates when new account settings are loaded.
+ *
+ * @returns A React functional component rendering an account settings form.
+ */
 export function AccountForm() {
   const { data: accountSettings, isLoading } = api.settings.account.useQuery();
 
@@ -87,6 +96,9 @@ export function AccountForm() {
     }
   }, [form, accountSettings]);
 
+  /**
+   * Updates account settings with submitted data.
+   */
   function onSubmit(data: AccountSettingsFormValues) {
     updateAccount.mutate({
       ...accountSettings,
