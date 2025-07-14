@@ -2,6 +2,17 @@ import { configStore } from "@/server/auth/config-store";
 import { db } from "@/server/db";
 import { authSettingsSchema } from "@/utils/schema/settings";
 
+/**
+ * Retrieves and validates authentication settings from the database.
+ *
+ * This function queries the database for settings, parses them using a schema,
+ * validates that enabled providers have the necessary credentials, updates the
+ * configuration store with validated values, and returns the validated auth settings.
+ * If an error occurs during this process, it logs the error, sets default values,
+ * updates the config store with these defaults, and returns them.
+ *
+ * @returns The validated authentication settings.
+ */
 export async function getAuthSettingsFromDB() {
   try {
     const settings = await db.query.settings.findFirst();
