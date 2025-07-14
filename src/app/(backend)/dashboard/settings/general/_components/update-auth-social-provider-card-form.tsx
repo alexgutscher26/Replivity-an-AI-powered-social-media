@@ -24,6 +24,15 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+/**
+ * Update the social authentication settings form component.
+ *
+ * This function manages the rendering and handling of a form to update social authentication settings.
+ * It fetches the current settings using a suspense query, validates user input, and updates the settings via a mutation.
+ * The function also handles various error scenarios and provides feedback through toast notifications.
+ *
+ * @returns A React component responsible for rendering the social authentication settings form.
+ */
 export function UpdateAuthSocialProviderCardForm() {
   const utils = api.useUtils();
   const [settings] = api.settings.socialAuth.useSuspenseQuery();
@@ -78,6 +87,16 @@ export function UpdateAuthSocialProviderCardForm() {
     }
   }, [settings, form]);
 
+  /**
+   * Handles form submission for authentication settings.
+   *
+   * Validates that all enabled providers have both Client ID and Client Secret.
+   * Also checks if the auth secret is at least 32 characters long.
+   * If any validation fails, it shows an error toast notification.
+   * If validations pass, it submits the data using the `update` mutation.
+   *
+   * @param data - The authentication settings to be validated and submitted.
+   */
   const onSubmit = (data: AuthSettings) => {
     // Validate that enabled providers have credentials
     const enabledWithoutCredentials = data.enabledProviders.filter((provider) => {
