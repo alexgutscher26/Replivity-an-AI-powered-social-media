@@ -22,6 +22,9 @@ export const metadata: Metadata = {
 const lastUpdated = "January 15, 2024";
 const effectiveDate = "January 15, 2024";
 
+/**
+ * Renders the Terms of Service page component.
+ */
 export default function TermsOfServicePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
