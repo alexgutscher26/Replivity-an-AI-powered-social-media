@@ -116,33 +116,83 @@ export const settingsRouter = createTRPCRouter({
     }
   }),
   socialAuth: publicProcedure.query(async ({ ctx }) => {
-    const settings = await ctx.db.query.settings.findFirst();
-
-    return authSettingsSchema.parse(settings?.general?.auth ?? {});
+    try {
+      const settings = await ctx.db.query.settings.findFirst();
+      const auth = authSettingsSchema.parse(settings?.general?.auth ?? {});
+      
+      // Validate provider configurations
+      const validatedAuth = {
+        ...auth,
+        enabledProviders: auth.enabledProviders.filter((provider) => {
+          const credentials = auth.providerCredentials[provider];
+          return credentials?.clientId && credentials?.clientSecret;
+        }),
+      };
+      
+      return validatedAuth;
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Failed to fetch social auth settings: ${error instanceof Error ? error.message : String(error)}`,
+        cause: error,
+      });
+    }
   }),
   updateSocialAuth: adminProcedure
     .input(authSettingsSchema)
     .mutation(async ({ ctx, input }) => {
-      const existingSettings =
-        (await ctx.db.query.settings.findFirst()) ??
-        (await ctx.db.insert(settings).values({}).returning())[0];
+      try {
+        // Validate provider credentials before saving
+        const invalidProviders = input.enabledProviders.filter((provider) => {
+          const credentials = input.providerCredentials[provider];
+          return !credentials?.clientId || !credentials?.clientSecret;
+        });
+        
+        if (invalidProviders.length > 0) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Missing credentials for providers: ${invalidProviders.join(", ")}. Please provide both clientId and clientSecret for all enabled providers.`,
+          });
+        }
+        
+        // Validate secret is provided
+        if (!input.secret || input.secret.length < 32) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Auth secret must be at least 32 characters long for security.",
+          });
+        }
+        
+        const existingSettings =
+          (await ctx.db.query.settings.findFirst()) ??
+          (await ctx.db.insert(settings).values({}).returning())[0];
 
-      const result = await ctx.db
-        .update(settings)
-        .set({
-          general: {
-            ...existingSettings?.general,
-            auth: input,
-          },
-        })
-        .where(eq(settings.id, existingSettings!.id));
+        const result = await ctx.db
+          .update(settings)
+          .set({
+            general: {
+              ...existingSettings?.general,
+              auth: input,
+            },
+          })
+          .where(eq(settings.id, existingSettings!.id));
 
-      // Refresh the config store after update
-      await getAuthSettingsFromDB();
+        // Refresh the config store after update
+        await getAuthSettingsFromDB();
 
-      return result;
-    }),
-  aiModel: adminProcedure.query(async ({ ctx }) => {
+        return result;
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to update social auth settings: ${error instanceof Error ? error.message : String(error)}`,
+          cause: error,
+        });
+       }
+     }),
+   aiModel: adminProcedure.query(async ({ ctx }) => {
     const settings = await ctx.db.query.settings.findFirst();
 
     return aiModelProviderSettingsSchema.parse(settings?.general?.ai ?? {});

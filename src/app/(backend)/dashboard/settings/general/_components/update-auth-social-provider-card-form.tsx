@@ -35,11 +35,28 @@ export function UpdateAuthSocialProviderCardForm() {
       });
 
       await utils.settings.socialAuth.invalidate();
+      await utils.settings.socialAuthProviders.invalidate();
     },
     onError: (error) => {
-      toast.error("Uh oh! Something went wrong.", {
-        description:
-          error.message || "Failed to update settings. Please try again.",
+      console.error("Social auth update error:", error);
+      
+      // Handle specific error cases
+      let errorMessage = "Failed to update settings. Please try again.";
+      let errorTitle = "Update Failed";
+      
+      if (error.message.includes("Missing credentials")) {
+        errorTitle = "Missing Credentials";
+        errorMessage = error.message;
+      } else if (error.message.includes("Auth secret")) {
+        errorTitle = "Invalid Auth Secret";
+        errorMessage = error.message;
+      } else if (error.message.includes("database")) {
+        errorTitle = "Database Error";
+        errorMessage = "Unable to save settings. Please check your connection and try again.";
+      }
+      
+      toast.error(errorTitle, {
+        description: errorMessage,
         action: {
           label: "Try again",
           onClick: () => {
@@ -62,6 +79,27 @@ export function UpdateAuthSocialProviderCardForm() {
   }, [settings, form]);
 
   const onSubmit = (data: AuthSettings) => {
+    // Validate that enabled providers have credentials
+    const enabledWithoutCredentials = data.enabledProviders.filter((provider) => {
+      const credentials = data.providerCredentials[provider];
+      return !credentials?.clientId || !credentials?.clientSecret;
+    });
+    
+    if (enabledWithoutCredentials.length > 0) {
+      toast.error("Missing Credentials", {
+        description: `Please provide both Client ID and Client Secret for: ${enabledWithoutCredentials.join(", ")}`
+      });
+      return;
+    }
+    
+    // Validate auth secret
+    if (!data.secret || data.secret.length < 32) {
+      toast.error("Invalid Auth Secret", {
+        description: "Auth secret must be at least 32 characters long for security."
+      });
+      return;
+    }
+    
     update.mutate(data);
   };
 
@@ -113,19 +151,20 @@ export function UpdateAuthSocialProviderCardForm() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-sm font-medium">
-                                Client ID
+                                Client ID *
                               </FormLabel>
                               <FormControl>
                                 <Input
                                   {...field}
                                   className="border-border/50 bg-background"
                                   placeholder="Enter client ID"
+                                  required
                                 />
                               </FormControl>
                               <FormDescription className="text-xs">
                                 {provider.charAt(0).toUpperCase() +
                                   provider.slice(1)}{" "}
-                                Client ID
+                                Client ID (required)
                               </FormDescription>
                               <FormMessage />
                             </FormItem>
@@ -138,7 +177,7 @@ export function UpdateAuthSocialProviderCardForm() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-sm font-medium">
-                                Client Secret
+                                Client Secret *
                               </FormLabel>
                               <FormControl>
                                 <Input
@@ -146,12 +185,13 @@ export function UpdateAuthSocialProviderCardForm() {
                                   className="border-border/50 bg-background"
                                   placeholder="Enter client secret"
                                   type="password"
+                                  required
                                 />
                               </FormControl>
                               <FormDescription className="text-xs">
                                 {provider.charAt(0).toUpperCase() +
                                   provider.slice(1)}{" "}
-                                Client Secret
+                                Client Secret (required)
                               </FormDescription>
                               <FormMessage />
                             </FormItem>

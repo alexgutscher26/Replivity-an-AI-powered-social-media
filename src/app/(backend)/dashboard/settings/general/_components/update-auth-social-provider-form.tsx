@@ -41,11 +41,28 @@ export function UpdateAuthSocialProviderForm() {
       });
 
       await utils.settings.socialAuth.invalidate();
+      await utils.settings.socialAuthProviders.invalidate();
     },
     onError: (error) => {
-      toast.error("Uh oh! Something went wrong.", {
-        description:
-          error.message || "Failed to update settings. Please try again.",
+      console.error("Social auth update error:", error);
+      
+      // Handle specific error cases
+      let errorMessage = "Failed to update settings. Please try again.";
+      let errorTitle = "Update Failed";
+      
+      if (error.message.includes("Missing credentials")) {
+        errorTitle = "Missing Credentials";
+        errorMessage = error.message;
+      } else if (error.message.includes("Auth secret")) {
+        errorTitle = "Invalid Auth Secret";
+        errorMessage = error.message;
+      } else if (error.message.includes("database")) {
+        errorTitle = "Database Error";
+        errorMessage = "Unable to save settings. Please check your connection and try again.";
+      }
+      
+      toast.error(errorTitle, {
+        description: errorMessage,
         action: {
           label: "Try again",
           onClick: () => {
@@ -68,7 +85,52 @@ export function UpdateAuthSocialProviderForm() {
   }, [settings, form]);
 
   const onSubmit = (data: AuthSettings) => {
-    update.mutate(data);
+    // Validate that enabled providers have credentials
+    const enabledWithoutCredentials = data.enabledProviders.filter((provider) => {
+      const credentials = data.providerCredentials[provider];
+      return !credentials?.clientId || !credentials?.clientSecret;
+    });
+    
+    if (enabledWithoutCredentials.length > 0) {
+      toast.error("Missing Credentials", {
+        description: `Please provide both Client ID and Client Secret for: ${enabledWithoutCredentials.join(", ")}`
+      });
+      return;
+    }
+    
+    // Validate auth secret
+    if (!data.secret || data.secret.length < 32) {
+      toast.error("Invalid Auth Secret", {
+        description: "Auth secret must be at least 32 characters long for security."
+      });
+      return;
+    }
+    
+    // Validate trusted origins format
+    const invalidOrigins = data.trustedOrigins?.filter(origin => {
+      if (!origin) return false; // Allow empty origins to be filtered out
+      try {
+        new URL(origin);
+        return false;
+      } catch {
+        return true;
+      }
+    }) ?? [];
+    
+    if (invalidOrigins.length > 0) {
+      toast.error("Invalid Origins", {
+        description: `Please provide valid URLs for trusted origins: ${invalidOrigins.join(", ")}`
+      });
+      return;
+    }
+    
+    // Filter out empty origins before submitting
+    const cleanedData = {
+      ...data,
+      trustedOrigins: data.trustedOrigins?.filter(origin => origin.trim() !== "") ?? []
+    };
+    
+    update.mutate(cleanedData);
   };
 
   const enabledProviders = form.watch("enabledProviders") ?? [];
@@ -239,10 +301,17 @@ export function UpdateAuthSocialProviderForm() {
                           defaultValue=""
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Client ID</FormLabel>
+                              <FormLabel>Client ID *</FormLabel>
                               <FormControl>
-                                <Input {...field} />
+                                <Input 
+                                  {...field} 
+                                  placeholder="Enter client ID"
+                                  required
+                                />
                               </FormControl>
+                              <FormDescription className="text-xs">
+                                Required for {provider} authentication
+                              </FormDescription>
                               <FormMessage />
                             </FormItem>
                           )}
@@ -253,10 +322,18 @@ export function UpdateAuthSocialProviderForm() {
                           defaultValue=""
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Client Secret</FormLabel>
+                              <FormLabel>Client Secret *</FormLabel>
                               <FormControl>
-                                <Input type="password" {...field} />
+                                <Input 
+                                  type="password" 
+                                  {...field} 
+                                  placeholder="Enter client secret"
+                                  required
+                                />
                               </FormControl>
+                              <FormDescription className="text-xs">
+                                Required for {provider} authentication
+                              </FormDescription>
                               <FormMessage />
                             </FormItem>
                           )}

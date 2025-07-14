@@ -16,22 +16,42 @@ import { admin } from "better-auth/plugins";
 // Initialize auth settings before creating the auth instance
 await getAuthSettingsFromDB();
 
-// Helper to create provider config
+// Helper to create provider config with validation
 const createProviderConfig = (provider: SocialProvider) => ({
   get clientId() {
-    return configStore.getProviderCredentials(provider).clientId;
+    const credentials = configStore.getProviderCredentials(provider);
+    if (!credentials.clientId) {
+      console.warn(`Missing clientId for social provider: ${provider}`);
+      return "";
+    }
+    return credentials.clientId;
   },
   get clientSecret() {
-    return configStore.getProviderCredentials(provider).clientSecret;
+    const credentials = configStore.getProviderCredentials(provider);
+    if (!credentials.clientSecret) {
+      console.warn(`Missing clientSecret for social provider: ${provider}`);
+      return "";
+    }
+    return credentials.clientSecret;
   },
 });
 
-// Get enabled providers
+// Get enabled providers with validation
 const enabledProviders = configStore.getEnabledProviders();
+
+// Filter out providers with missing credentials
+const validProviders = enabledProviders.filter((provider) => {
+  const credentials = configStore.getProviderCredentials(provider);
+  const isValid = credentials.clientId && credentials.clientSecret;
+  if (!isValid) {
+    console.warn(`Skipping social provider '${provider}' due to missing credentials`);
+  }
+  return isValid;
+});
 
 // Create social providers config object dynamically
 const socialProvidersConfig = Object.fromEntries(
-  enabledProviders.map((provider) => [
+  validProviders.map((provider) => [
     provider,
     createProviderConfig(provider),
   ]),
