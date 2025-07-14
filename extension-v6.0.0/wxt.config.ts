@@ -2,7 +2,7 @@ import { defineConfig } from 'wxt'
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
-  extensionApi: 'chrome',
+  extensionApi: 'chrome', // WXT will automatically handle browser-specific configurations (Safari, Edge, etc.)
   hooks: {
     'build:manifestGenerated': (wxt, manifest) => {
       if (wxt.config.command === 'serve') {

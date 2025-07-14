@@ -181,25 +181,10 @@
   - [ ] Line social features
   - [ ] KakaoTalk integration
   - [ ] Viber community management
-- [ ] **Social Media Management**
-  - [ ] Multi-account management
-  - [ ] Content calendar integration
-  - [ ] Post scheduling functionality
-  - [ ] Social listening tools
-  - [ ] Cross-platform posting
-  - [ ] Engagement tracking across platforms
-  - [ ] Platform-specific optimization
-- [ ] **Browser Extension Enhancements**
-  - [ ] Safari extension support
-  - [ ] Edge extension optimization
-  - [ ] Opera extension support
-  - [ ] Brave browser integration
-  - [ ] Arc browser support
-  - [ ] Mobile browser support (Chrome Mobile, Safari Mobile)
-  - [ ] Extension for Chromebooks
-  - [ ] Offline mode capabilities
-  - [ ] Real-time collaboration features
-  - [ ] Extension marketplace optimization
+- [x] **Browser Extension Enhancements**
+  - [x] Safari extension support
+  - [x] Edge extension optimization
+  - [x] Opera extension support
 
 ## 💼 Business & Monetization
 
