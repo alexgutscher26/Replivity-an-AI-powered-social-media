@@ -22,6 +22,9 @@ export const metadata: Metadata = {
 const lastUpdated = "January 15, 2024";
 const effectiveDate = "January 15, 2024";
 
+/**
+ * Renders the Privacy Policy page with detailed information on data protection and privacy practices.
+ */
 export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">

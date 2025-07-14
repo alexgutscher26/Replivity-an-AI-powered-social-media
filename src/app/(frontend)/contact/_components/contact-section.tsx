@@ -27,6 +27,17 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 // Contact section component with enhanced UX and accessibility
+/**
+ * ContactSection component for handling contact form submissions.
+ *
+ * This component manages a contact form with fields for name, email, subject, and message.
+ * It includes client-side validation, auto-saving draft to localStorage,
+ * and handles successful and error submission states.
+ * Upon successful submission, it displays a success toast and resets the form.
+ * On error, it shows an error toast with a retry option and focuses back on the submit button.
+ *
+ * @returns JSX for the contact section component.
+ */
 export default function ContactSection() {
   const formRef = useRef<HTMLFormElement>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
