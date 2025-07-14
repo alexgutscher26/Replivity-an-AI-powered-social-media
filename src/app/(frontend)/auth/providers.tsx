@@ -6,6 +6,13 @@ import { AuthUIProviderTanstack } from "@daveyplate/better-auth-ui/tanstack";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+/**
+ * Renders a component that provides social authentication providers to its children.
+ * Fetches social auth providers using an API query and handles loading, error, and success states.
+ * Logs errors and renders the AuthUIProviderTanstack with appropriate configurations.
+ *
+ * @param {React.ReactNode} children - The child components to render within the provider context.
+ */
 export function Providers({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { 
