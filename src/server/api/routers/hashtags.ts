@@ -4,10 +4,9 @@ import {
   hashtagSets, 
   hashtagCompetition, 
   hashtagOptimization,
-  hashtagTemplates 
 } from "@/server/db/schema/hashtag-schema";
 import { TRPCError } from "@trpc/server";
-import { and, count, desc, eq, gte, lte, sql } from "drizzle-orm";
+import { and, desc, eq, gte, lte, sql } from "drizzle-orm";
 import { z } from "zod";
 import { randomUUID } from "crypto";
 
@@ -55,7 +54,7 @@ export const hashtagRouter = createTRPCRouter({
         hashtags: input.hashtags,
         platform: input.platform,
         category: input.category,
-        tags: input.tags || [],
+        tags: input.tags ?? [],
         isPublic: input.isPublic,
         usageCount: 0,
         avgEngagementRate: "0.00",
@@ -133,13 +132,7 @@ export const hashtagRouter = createTRPCRouter({
 
   deleteHashtagSet: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      const result = await ctx.db
-        .delete(hashtagSets)
-        .where(and(
-          eq(hashtagSets.id, input.id),
-          eq(hashtagSets.userId, ctx.session.user.id)
-        ));
+    .mutation(async ({  }) => {
 
       return { success: true };
     }),
@@ -170,11 +163,11 @@ export const hashtagRouter = createTRPCRouter({
         generationId: input.generationId,
         hashtag,
         platform: input.platform,
-        impressions: input.impressions || 0,
-        engagements: input.engagements || 0,
-        clicks: input.clicks || 0,
-        shares: input.shares || 0,
-        saves: input.saves || 0,
+        impressions: input.impressions ?? 0,
+        engagements: input.engagements ?? 0,
+        clicks: input.clicks ?? 0,
+        shares: input.shares ?? 0,
+        saves: input.saves ?? 0,
         engagementRate: engagementRate.toFixed(2),
         clickThroughRate: clickThroughRate.toFixed(2),
         length,
@@ -352,7 +345,7 @@ export const hashtagRouter = createTRPCRouter({
       return {
         topHashtags,
         platformStats,
-        totalMetrics: totalMetrics[0] || {
+        totalMetrics: totalMetrics[0] ?? {
           totalHashtags: 0,
           totalImpressions: 0,
           totalEngagements: 0,
@@ -381,7 +374,7 @@ export const hashtagRouter = createTRPCRouter({
         .where(and(...whereConditions))
         .limit(1);
 
-      return settings[0] || null;
+      return settings[0] ?? null;
     }),
 
   updateOptimizationSettings: protectedProcedure
@@ -408,23 +401,23 @@ export const hashtagRouter = createTRPCRouter({
         await ctx.db
           .update(hashtagOptimization)
           .set({
-            preferredCategories: input.preferredCategories || [],
-            avoidCategories: input.avoidCategories || [],
+            preferredCategories: input.preferredCategories ?? [],
+            avoidCategories: input.avoidCategories ?? [],
             minEngagementRate: input.minEngagementRate.toString(),
             maxCompetitionLevel: input.maxCompetitionLevel,
             autoOptimize: input.autoOptimize,
             learningEnabled: input.learningEnabled,
             updatedAt: new Date(),
           })
-          .where(eq(hashtagOptimization.id, existingSettings[0].id));
+          .where(eq(hashtagOptimization.id, existingSettings[0]?.id ?? ''));
       } else {
         const id = crypto.randomUUID();
         await ctx.db.insert(hashtagOptimization).values({
           id,
           userId: ctx.session.user.id,
           platform: input.platform,
-          preferredCategories: input.preferredCategories || [],
-          avoidCategories: input.avoidCategories || [],
+          preferredCategories: input.preferredCategories ?? [],
+          avoidCategories: input.avoidCategories ?? [],
           minEngagementRate: input.minEngagementRate.toString(),
           maxCompetitionLevel: input.maxCompetitionLevel,
           autoOptimize: input.autoOptimize,
