@@ -8,6 +8,9 @@ import { UpdateUserProfileSettingsForm } from "@/app/(backend)/dashboard/setting
 
 import { Separator } from "@/components/ui/separator";
 
+/**
+ * Renders a profile settings page with various user setting forms.
+ */
 export default async function ProfileSettingsPage() {
   return (
     <div className="space-y-6">
