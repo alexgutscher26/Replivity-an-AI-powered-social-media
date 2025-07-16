@@ -3,6 +3,7 @@ import { generationRouter } from "@/server/api/routers/generations";
 import { hashtagRouter } from "@/server/api/routers/hashtags";
 import { paymentsRouter } from "@/server/api/routers/payments";
 import { productsRouter } from "@/server/api/routers/products";
+import { securityRouter } from "@/server/api/routers/security";
 import { settingsRouter } from "@/server/api/routers/settings";
 import { templatesRouter } from "@/server/api/routers/templates";
 import { usageRouter } from "@/server/api/routers/usage";
@@ -24,6 +25,7 @@ export const appRouter = createTRPCRouter({
   generations: generationRouter,
   hashtags: hashtagRouter,
   templates: templatesRouter,
+  security: securityRouter,
 });
 
 // export type definition of API

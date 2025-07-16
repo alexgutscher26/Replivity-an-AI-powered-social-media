@@ -11,6 +11,7 @@ import {
   SignedIn,
 } from "@daveyplate/better-auth-ui";
 import { type ReactNode } from "react";
+import { PasswordResetGuard } from "@/components/auth/password-reset-guard";
 import AppSidebar from "./_components/app-sidebar";
 import AppSidebarSkeleton from "./_components/app-sidebar-skeleton";
 import BreadcrumbMenu from "./_components/breadcrumb-menu";
@@ -43,21 +44,23 @@ export default async function DashboardLayout({
       <RedirectToSignIn />
 
       <SignedIn>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <header className="flex h-16 shrink-0 items-center gap-2">
-              <div className="flex items-center gap-2 px-4">
-                <SidebarTrigger className="-ml-1" />
-                <Separator orientation="vertical" className="mr-2 h-4" />
-                <BreadcrumbMenu />
+        <PasswordResetGuard>
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <header className="flex h-16 shrink-0 items-center gap-2">
+                <div className="flex items-center gap-2 px-4">
+                  <SidebarTrigger className="-ml-1" />
+                  <Separator orientation="vertical" className="mr-2 h-4" />
+                  <BreadcrumbMenu />
+                </div>
+              </header>
+              <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+                {children}
               </div>
-            </header>
-            <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-              {children}
-            </div>
-          </SidebarInset>
-        </SidebarProvider>
+            </SidebarInset>
+          </SidebarProvider>
+        </PasswordResetGuard>
       </SignedIn>
     </>
   );

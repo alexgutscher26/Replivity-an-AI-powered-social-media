@@ -14,6 +14,12 @@ export const user = createTable("user", {
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
   twoFactorEnabled: boolean("two_factor_enabled"),
+  // Password reset security fields
+  passwordResetRequired: boolean("password_reset_required").default(false),
+  passwordResetReason: text("password_reset_reason"),
+  passwordResetRequiredAt: timestamp("password_reset_required_at"),
+  lastPasswordChange: timestamp("last_password_change"),
+  passwordExpiresAt: timestamp("password_expires_at"),
 });
 
 export const session = createTable("session", {
@@ -66,4 +72,20 @@ export const twoFactor = createTable("two_factor", {
     .references(() => user.id),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const securityEvent = createTable("security_event", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id),
+  eventType: text("event_type").notNull(), // 'suspicious_login', 'password_breach', 'multiple_failed_attempts', 'account_compromise', 'admin_forced'
+  severity: text("severity").notNull(), // 'low', 'medium', 'high', 'critical'
+  description: text("description").notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  metadata: text("metadata"), // JSON string for additional event data
+  actionTaken: text("action_taken"), // 'password_reset_required', 'account_locked', 'session_terminated', 'notification_sent'
+  resolvedAt: timestamp("resolved_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });

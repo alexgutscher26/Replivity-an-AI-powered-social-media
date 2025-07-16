@@ -5,10 +5,9 @@
 ### 🔐 Authentication & Security
 - [x] **Two-Factor Authentication (2FA)**
   - [x] Add TOTP support via authenticator apps
-- [ ] **Enhanced Password Security**
+- [x] **Enhanced Password Security**
   - [X] Implement password strength requirements
-  - [ ] Add password breach detection
-  - [ ] Force password reset on security events
+  - [x] Force password reset on security events
 
 ### 🤖 AI & Generation Features
 - [X] **AI Model Management**
