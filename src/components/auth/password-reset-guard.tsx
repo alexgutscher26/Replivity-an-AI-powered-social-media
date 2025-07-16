@@ -13,6 +13,16 @@ interface PasswordResetGuardProps {
   children: React.ReactNode;
 }
 
+/**
+ * A React component that guards password reset requirements before rendering its children.
+ *
+ * This component checks if a password reset is required using the `checkPasswordResetRequired` API query.
+ * It handles different states such as loading, error, and password reset required scenarios,
+ * providing appropriate UI feedback for each case. If no reset is required, it renders its children.
+ *
+ * @param {PasswordResetGuardProps} props - The props for the PasswordResetGuard component.
+ * @returns {JSX.Element} - The JSX element representing the guard or its children based on the password reset status.
+ */
 export function PasswordResetGuard({ children }: PasswordResetGuardProps) {
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
@@ -39,10 +49,16 @@ export function PasswordResetGuard({ children }: PasswordResetGuardProps) {
     }
   }, [isLoading, resetStatus]);
 
+  /**
+   * Redirects to the reset password page with forced reset query parameter.
+   */
   const handleGoToReset = () => {
     router.push("/auth/reset-password?forced=true");
   };
 
+  /**
+   * Redirects user to the login page after triggering a logout.
+   */
   const handleLogout = () => {
     // Trigger logout and redirect to login
     window.location.href = "/auth/signin";
@@ -164,6 +180,13 @@ export function PasswordResetGuard({ children }: PasswordResetGuardProps) {
 }
 
 // Hook for checking password reset status in components
+/**
+ * Custom hook to fetch and manage password reset status.
+ *
+ * This function uses the `api.security.checkPasswordResetRequired.useQuery` to determine if a password reset is required.
+ * It returns an object containing the reset status, whether it's loading, any errors encountered, and a refetch function.
+ * The reset status includes whether a reset is required, the reason for the reset, and when the reset expires.
+ */
 export function usePasswordResetStatus() {
   const { data: resetStatus, isLoading, error, refetch } = api.security.checkPasswordResetRequired.useQuery(
     undefined,
