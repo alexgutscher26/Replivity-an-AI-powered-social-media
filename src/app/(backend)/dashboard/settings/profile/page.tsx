@@ -1,6 +1,7 @@
 import { ActiveSessionUserCardSettingsForm } from "@/app/(backend)/dashboard/settings/profile/_components/active-session-user-card-settings";
 import { DeleteAccountCardSettingsForm } from "@/app/(backend)/dashboard/settings/profile/_components/delete-account-card-settings";
 import { OtherSessionsUserCardSettingsForm } from "@/app/(backend)/dashboard/settings/profile/_components/other-sessions-user-card-settings";
+import { TwoFactorAuthSettings } from "@/app/(backend)/dashboard/settings/profile/_components/two-factor-auth-settings";
 import { UpdateUserEmailSettingsForm } from "@/app/(backend)/dashboard/settings/profile/_components/update-user-email-settings";
 import { UpdateUserPasswordSettingsForm } from "@/app/(backend)/dashboard/settings/profile/_components/update-user-password-settings";
 import { UpdateUserProfileSettingsForm } from "@/app/(backend)/dashboard/settings/profile/_components/update-user-profile-settings-form";
@@ -21,6 +22,7 @@ export default async function ProfileSettingsPage() {
 
       <UpdateUserEmailSettingsForm />
       <UpdateUserPasswordSettingsForm />
+      <TwoFactorAuthSettings />
       <ActiveSessionUserCardSettingsForm />
       <OtherSessionsUserCardSettingsForm />
       <DeleteAccountCardSettingsForm />

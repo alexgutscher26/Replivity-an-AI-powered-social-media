@@ -11,7 +11,7 @@ import { type SocialProvider } from "@daveyplate/better-auth-ui";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { admin } from "better-auth/plugins";
+import { admin, twoFactor } from "better-auth/plugins";
 
 // Initialize auth settings before creating the auth instance
 await getAuthSettingsFromDB();
@@ -63,7 +63,14 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
-  plugins: [nextCookies(), admin()],
+  plugins: [
+    nextCookies(),
+    admin(),
+    twoFactor({
+      issuer: "AI Social Replier",
+      skipVerificationOnEnable: true,
+    }),
+  ],
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,

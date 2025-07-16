@@ -28,7 +28,7 @@ export async function getAuthSettingsFromDB() {
     
     // Return safe defaults
     const defaultAuth = {
-      secret: process.env.AUTH_SECRET ?? "",
+      secret: process.env.BETTER_AUTH_SECRET ?? "",
       trustedOrigins: [],
       enabledProviders: [],
       providerCredentials: {},

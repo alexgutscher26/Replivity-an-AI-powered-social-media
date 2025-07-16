@@ -3,10 +3,8 @@
 ## 🚀 High Priority Features
 
 ### 🔐 Authentication & Security
-- [ ] **Two-Factor Authentication (2FA)**
-  - [ ] Add TOTP support via authenticator apps
-  - [ ] SMS-based 2FA as backup option
-  - [ ] Recovery codes for emergency access
+- [x] **Two-Factor Authentication (2FA)**
+  - [x] Add TOTP support via authenticator apps
 - [ ] **Enhanced Password Security**
   - [X] Implement password strength requirements
   - [ ] Add password breach detection
