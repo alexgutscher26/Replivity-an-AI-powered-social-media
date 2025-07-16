@@ -62,6 +62,15 @@ type ForcePasswordResetForm = z.infer<typeof forcePasswordResetSchema>;
 type LogSecurityEventForm = z.infer<typeof logSecurityEventSchema>;
 type SetPasswordExpiryForm = z.infer<typeof setPasswordExpirySchema>;
 
+/**
+ * Determines the color scheme based on the severity level.
+ *
+ * This function maps a given severity string to its corresponding background and text color classes.
+ * If the severity does not match any predefined cases, it defaults to a gray color scheme.
+ *
+ * @param severity - A string representing the severity level ('low', 'medium', 'high', 'critical').
+ * @returns A string with concatenated CSS class names for background and text color.
+ */
 function getSeverityColor(severity: string) {
   switch (severity) {
     case 'low': return 'bg-blue-100 text-blue-800';
@@ -72,6 +81,15 @@ function getSeverityColor(severity: string) {
   }
 }
 
+/**
+ * Determines the color scheme based on the event type.
+ *
+ * This function uses a switch statement to map each event type to its corresponding color scheme.
+ * The color schemes are defined using Tailwind CSS utility classes for background and text colors.
+ *
+ * @param eventType - A string representing the type of event.
+ * @returns A string with Tailwind CSS classes for background and text colors.
+ */
 function getEventTypeColor(eventType: string) {
   switch (eventType) {
     case 'suspicious_login': return 'bg-yellow-100 text-yellow-800';
@@ -86,6 +104,15 @@ function getEventTypeColor(eventType: string) {
   }
 }
 
+/**
+ * SecurityDashboard Component
+ *
+ * This component provides a dashboard for managing and monitoring user security events.
+ * It includes functionality to force password resets, log security events, set password expiries,
+ * and view security events for specific users.
+ *
+ * @returns {JSX.Element} - The rendered React component.
+ */
 export default function SecurityManagementPage() {
   const [selectedUserId, setSelectedUserId] = useState("");
   const [isForceResetDialogOpen, setIsForceResetDialogOpen] = useState(false);
@@ -162,14 +189,23 @@ export default function SecurityManagementPage() {
     },
   });
 
+  /**
+   * Initiates a password reset mutation with the provided form data.
+   */
   const onForceReset = (data: ForcePasswordResetForm) => {
     forcePasswordResetMutation.mutate(data);
   };
 
+  /**
+   * Triggers a security event log mutation with provided data.
+   */
   const onLogEvent = (data: LogSecurityEventForm) => {
     logSecurityEventMutation.mutate(data);
   };
 
+  /**
+   * Triggers a mutation to set password expiry using the provided form data.
+   */
   const onSetExpiry = (data: SetPasswordExpiryForm) => {
     setPasswordExpiryMutation.mutate(data);
   };
