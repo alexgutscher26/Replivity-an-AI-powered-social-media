@@ -30,6 +30,16 @@ const passwordResetSchema = z.object({
 
 type PasswordResetForm = z.infer<typeof passwordResetSchema>;
 
+/**
+ * Component to display the strength of a given password.
+ *
+ * This component evaluates the password against several criteria and calculates its strength percentage.
+ * It then displays the strength level as text and visually with a progress bar.
+ * Additionally, it lists each criterion with an icon indicating whether the password meets it.
+ *
+ * @param {string} password - The password to evaluate.
+ * @returns A React component displaying the password strength and criteria status.
+ */
 function PasswordStrengthIndicator({ password }: { password: string }) {
   const checks = [
     { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
@@ -44,6 +54,14 @@ function PasswordStrengthIndicator({ password }: { password: string }) {
 
 
 
+  /**
+   * Determines the strength text based on the strength value.
+   *
+   * This function evaluates the `strength` variable and returns a corresponding string:
+   * - "Weak" if the strength is less than 40,
+   * - "Medium" if the strength is between 40 (inclusive) and 80 (exclusive),
+   * - "Strong" if the strength is 80 or greater.
+   */
   const getStrengthText = () => {
     if (strength < 40) return "Weak";
     if (strength < 80) return "Medium";
@@ -83,6 +101,15 @@ function PasswordStrengthIndicator({ password }: { password: string }) {
   );
 }
 
+/**
+ * ResetPasswordPage component for handling password reset functionality.
+ *
+ * This component renders a form where users can reset their passwords. It checks if the reset is forced and displays an alert if necessary.
+ * The form includes fields for the current password, new password, and confirmation of the new password. Users can toggle password visibility.
+ * On form submission, it simulates a delay and then completes the password reset mutation. Success or failure messages are displayed using toast notifications.
+ *
+ * @returns A React component rendering the password reset page UI.
+ */
 export default function ResetPasswordPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -116,6 +143,11 @@ export default function ResetPasswordPage() {
     },
   });
 
+  /**
+   * Handles the submission of the password reset form.
+   * Initiates a simulated API call to change the password and updates the reset status.
+   * Displays an error message if the password change fails and reverts the submitting state.
+   */
   const onSubmit = async (_data: PasswordResetForm) => {
     setIsSubmitting(true);
     try {
