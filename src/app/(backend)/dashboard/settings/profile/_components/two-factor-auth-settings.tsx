@@ -30,6 +30,16 @@ import { Shield, ShieldCheck, QrCode, Copy, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 
+/**
+ * Two-Factor Authentication Settings component.
+ *
+ * This component handles the enabling, disabling, and managing of two-factor authentication (2FA) settings for a user.
+ * It manages various UI states such as showing dialogs, handling verification codes, and copying backup codes.
+ * The component interacts with an authentication client to perform 2FA enable and disable operations, and it provides feedback
+ * through toast notifications for success or error messages.
+ *
+ * @returns A React functional component that renders the 2FA settings interface.
+ */
 export function TwoFactorAuthSettings() {
   const { user, refetch } = useSession();
   const [isEnabling, setIsEnabling] = useState(false);
@@ -46,11 +56,25 @@ export function TwoFactorAuthSettings() {
   const [passwordAction, setPasswordAction] = useState<'enable' | 'disable'>('enable');
   const [password, setPassword] = useState<string>("");
 
+  /**
+   * Handles enabling 2FA by setting password action and showing dialog.
+   */
   const handleEnable2FA = async () => {
     setPasswordAction('enable');
     setShowPasswordDialog(true);
   };
 
+  /**
+   * Handle the confirmation and enabling of two-factor authentication (2FA).
+   *
+   * This function first checks if a password is provided. If not, it displays an error toast and returns early.
+   * It then attempts to enable 2FA by calling the `authClient.twoFactor.enable` method with the provided password.
+   * Upon successful response, it sets the TOTP URI and backup codes, and shows the setup dialog.
+   * In case of unexpected response format or errors during the process, appropriate error messages are logged
+   * and displayed using toast notifications. Finally, it resets the enabling state and clears the password input.
+   *
+   * @returns None
+   */
   const handleConfirmEnable2FA = async () => {
     if (!password) {
       toast.error("Password required", {
@@ -111,6 +135,15 @@ export function TwoFactorAuthSettings() {
     }
   };
 
+  /**
+   * Handles the verification and completion of two-factor authentication setup.
+   *
+   * It first checks if the verification code is valid (6 digits). If not, it displays an error message.
+   * Then, it sends the verification code to the authClient for validation. Upon success, it shows a success message,
+   * hides the setup dialog, and sets up backup codes. On failure, it logs the error and displays an error message.
+   *
+   * @returns void
+   */
   const handleVerifyAndComplete = async () => {
     if (!verificationCode || verificationCode.length !== 6) {
       toast.error("Invalid code", {
@@ -140,11 +173,21 @@ export function TwoFactorAuthSettings() {
     }
   };
 
+  /**
+   * Sets password action to 'disable' and shows the password dialog.
+   */
   const handleDisable2FA = async () => {
     setPasswordAction('disable');
     setShowPasswordDialog(true);
   };
 
+  /**
+   * Handles the confirmation of disabling two-factor authentication (2FA).
+   *
+   * This function checks if a password is provided, then attempts to disable 2FA using the authClient.
+   * It updates the UI state during the process and provides feedback through toast notifications.
+   * If an error occurs, it logs the error and informs the user of the failure.
+   */
   const handleConfirmDisable2FA = async () => {
     if (!password) {
       toast.error("Password required", {
@@ -174,6 +217,14 @@ export function TwoFactorAuthSettings() {
     }
   };
 
+  /**
+   * Copies the provided text to the clipboard and displays a success message.
+   * If successful, it sets the copied code ID and resets it after 2 seconds.
+   * Handles errors by logging them and displaying an error message.
+   *
+   * @param text - The text to be copied to the clipboard.
+   * @param codeId - Optional identifier for the copied code, used to track which code was copied.
+   */
   const copyToClipboard = async (text: string, codeId?: string) => {
     try {
       await navigator.clipboard.writeText(text);
