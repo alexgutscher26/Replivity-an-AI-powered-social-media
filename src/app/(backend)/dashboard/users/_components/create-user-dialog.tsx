@@ -95,7 +95,7 @@ function PasswordStrengthIndicator({ password }: { password: string }) {
         <Progress
           value={progress}
           className={cn("h-2", strengthColor)}
-          indicatorClassName={strengthColor}
+          // Remove indicatorClassName as it's not a valid prop for Progress component
         />
         <span className="ml-2 text-sm font-medium">{strengthText}</span>
       </div>

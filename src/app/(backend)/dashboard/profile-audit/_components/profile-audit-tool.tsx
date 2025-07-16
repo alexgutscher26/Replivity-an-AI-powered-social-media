@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";
@@ -19,7 +20,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -42,16 +42,12 @@ import {
   TrendingUp,
   Users,
   Heart,
-  MessageCircle,
-  Share,
-  Eye,
   Target,
   Zap,
   Award,
   BarChart3,
   Calendar,
   Clock,
-  Globe,
   Instagram,
   Twitter,
   Linkedin,
@@ -61,12 +57,9 @@ import {
   Sparkles,
   Download,
   Video,
-  RefreshCw,
   ExternalLink,
   Image as ImageIcon,
   Hash,
-  AtSign,
-  Link as LinkIcon,
   Star,
   ThumbsUp,
   ThumbsDown,
@@ -210,11 +203,6 @@ const platformConfig = {
 };
 
 // Score color mapping
-const getScoreColor = (score: number) => {
-  if (score >= 80) return "text-green-600";
-  if (score >= 60) return "text-yellow-600";
-  return "text-red-600";
-};
 
 const getScoreBadgeVariant = (score: number) => {
   if (score >= 80) return "default";
@@ -223,7 +211,7 @@ const getScoreBadgeVariant = (score: number) => {
 };
 
 export function ProfileAuditTool() {
-  const { user } = useSession();
+  useSession();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<ProfileAnalysis | null>(null);
   const [profileMetrics, setProfileMetrics] = useState<ProfileMetrics | null>(null);
@@ -240,7 +228,6 @@ export function ProfileAuditTool() {
   });
 
   const selectedPlatform = form.watch("platform");
-  const includeCompetitors = form.watch("includeCompetitors");
 
   const analyzeProfile = async (data: ProfileAuditFormValues) => {
     setIsAnalyzing(true);

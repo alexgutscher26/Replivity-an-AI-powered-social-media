@@ -1,6 +1,6 @@
 import type { AppRouter } from '@/entrypoints/background'
 
-import { Toaster } from '@/components/ui/sonner.tsx'
+import { Toaster } from '@/components/ui/sonner'
 import '@/entrypoints/style.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createTRPCReact } from '@trpc/react-query'
@@ -9,11 +9,11 @@ import ReactDOM from 'react-dom/client'
 import { HashRouter, Route, Routes } from 'react-router'
 import { chromeLink } from 'trpc-chrome/link'
 
-import App from './App.tsx'
-import Auth from './auth/Auth.tsx'
-import { Providers } from './auth/Providers.tsx'
-import RootLayout from './layout.tsx'
-import { ThemeProvider } from './theme-provider.tsx'
+import App from './App'
+import Auth from './auth/Auth'
+import { Providers } from './auth/Providers'
+import RootLayout from './layout'
+import { ThemeProvider } from './theme-provider'
 
 const port = browser.runtime.connect() as chrome.runtime.Port
 

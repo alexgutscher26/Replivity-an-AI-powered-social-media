@@ -170,18 +170,18 @@ Example format: #hashtag1 #hashtag2 #hashtag3`;
 
   const parseHashtagsFromText = (text: string): string[] => {
     const hashtagRegex = /#[\w\d_]+/g;
-    const matches = text.match(hashtagRegex) || [];
+    const matches = text.match(hashtagRegex) ?? [];
     return matches.slice(0, 30); // Limit to max 30 hashtags
   };
 
   const copyHashtags = (hashtags: string[]) => {
     const hashtagText = hashtags.join(" ");
-    navigator.clipboard.writeText(hashtagText);
+    void navigator.clipboard.writeText(hashtagText);
     toast.success("Hashtags copied to clipboard!");
   };
 
   const copyIndividualHashtag = (hashtag: string) => {
-    navigator.clipboard.writeText(hashtag);
+    void navigator.clipboard.writeText(hashtag);
     toast.success(`${hashtag} copied to clipboard!`);
   };
 

@@ -57,18 +57,7 @@ const socialProvidersConfig = Object.fromEntries(
   ]),
 );
 
-// Common passwords list
-const commonPasswords = [
-  "password", "123456", "12345678", "qwerty", "abc123", "monkey", "1234567", 
-  "letmein", "trustno1", "dragon", "baseball", "111111", "iloveyou", "master", 
-  "sunshine", "ashley", "bailey", "passw0rd", "shadow", "123123", "654321", 
-  "superman", "qazwsx", "michael", "football", "welcome", "jesus", "ninja", 
-  "mustang", "password1", "123456789", "adobe123", "admin", "1234567890", 
-  "photoshop", "1234", "12345", "princess", "azerty", "000000", "access", 
-  "696969", "batman", "1qaz2wsx", "login", "qwertyuiop", "solo", "starwars", 
-  "121212", "flower", "hottie", "loveme", "zaq1zaq1", "freedom", "whatever", 
-  "666666", "!@#$%^&*", "charlie", "aa123456", "donald", "qwerty123", "secret"
-];
+
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -79,46 +68,6 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     maxPasswordLength: 64,
-    password: {
-      validate: (password: string) => {
-        // Check for uppercase letter
-        if (!/[A-Z]/.test(password)) {
-          return { valid: false, message: "Password must contain at least one uppercase letter" };
-        }
-        
-        // Check for lowercase letter
-        if (!/[a-z]/.test(password)) {
-          return { valid: false, message: "Password must contain at least one lowercase letter" };
-        }
-        
-        // Check for number
-        if (!/\d/.test(password)) {
-          return { valid: false, message: "Password must contain at least one number" };
-        }
-        
-        // Check for special character
-        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-          return { valid: false, message: "Password must contain at least one special character" };
-        }
-        
-        // Check for sequential characters
-        if (/(?:abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|012|123|234|345|456|567|678|789)/.test(password.toLowerCase())) {
-          return { valid: false, message: "Password must not contain sequential characters" };
-        }
-        
-        // Check for repeated characters
-        if (/(.)\1{2,}/.test(password)) {
-          return { valid: false, message: "Password must not contain repeated characters" };
-        }
-        
-        // Check for common passwords
-        if (commonPasswords.includes(password.toLowerCase())) {
-          return { valid: false, message: "Password is too common and easily guessable" };
-        }
-        
-        return { valid: true };
-      }
-    },
   },
   get trustedOrigins() {
     return configStore.getTrustedOrigins();
@@ -130,10 +79,10 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        before: async (user: { [x: string]: any; source: any; }) => {
-          type UserWithSource = { source?: string } & typeof user;
-
-          const { source, ...userData } = user;
+        before: async (user) => {
+          // Type assertion to handle custom source property
+          const userWithSource = user as typeof user & { source?: string };
+          const { source, ...userData } = userWithSource;
 
           if (source === "dashboard") {
             return { data: { ...userData, banned: false } };

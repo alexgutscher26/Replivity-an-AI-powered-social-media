@@ -193,14 +193,14 @@ export const hashtagPerformanceRelations = relations(hashtagPerformance, ({ one 
   }),
 }));
 
-export const hashtagSetsRelations = relations(hashtagSets, ({ many }) => ({
+export const hashtagSetsRelations = relations(hashtagSets, () => ({
   // Add relations if needed
 }));
 
-export const hashtagCompetitionRelations = relations(hashtagCompetition, ({ many }) => ({
+export const hashtagCompetitionRelations = relations(hashtagCompetition, () => ({
   // Add relations if needed
 }));
 
-export const hashtagTemplatesRelations = relations(hashtagTemplates, ({ many }) => ({
+export const hashtagTemplatesRelations = relations(hashtagTemplates, () => ({
   // Add relations if needed
 }));

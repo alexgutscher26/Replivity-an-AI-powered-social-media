@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -27,28 +28,6 @@ import { api } from "@/trpc/react";
 import { toast } from "sonner";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@radix-ui/react-select";
 
-interface CompetitionData {
-  hashtag: string;
-  platform: string;
-  competitionScore: number;
-  difficulty: "easy" | "medium" | "hard" | "very_hard";
-  opportunity: number;
-  totalPosts: number;
-  recentPosts: number;
-  avgEngagement: number;
-  topPostEngagement: number;
-  trendDirection: "rising" | "falling" | "stable";
-  growthRate: number;
-  bestPostingTimes: number[];
-  peakEngagementDay: string;
-  topContentTypes: string[];
-  relatedHashtags: string[];
-  topRegions: string[];
-  lastAnalyzed: string;
-}
-
-
-
 export default function HashtagCompetitionAnalysis() {
   const [searchHashtag, setSearchHashtag] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState("twitter");
@@ -61,7 +40,6 @@ export default function HashtagCompetitionAnalysis() {
   
   const analyzeMutation = api.hashtags.analyzeHashtagCompetition.useMutation({
     onSuccess: () => {
-      refetch();
       toast.success(`Analysis complete for ${searchHashtag}`);
       setSearchHashtag("");
     },
@@ -84,6 +62,8 @@ export default function HashtagCompetitionAnalysis() {
         return "bg-orange-100 text-orange-800 border-orange-200";
       case "very_hard":
         return "bg-red-100 text-red-800 border-red-200";
+      case "unknown":
+        return "bg-gray-100 text-gray-800 border-gray-200";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
@@ -99,6 +79,8 @@ export default function HashtagCompetitionAnalysis() {
         return <AlertTriangle className="h-4 w-4" />;
       case "very_hard":
         return <XCircle className="h-4 w-4" />;
+      case "unknown":
+        return <Minus className="h-4 w-4" />;
       default:
         return <Minus className="h-4 w-4" />;
     }
@@ -126,12 +108,14 @@ export default function HashtagCompetitionAnalysis() {
     return num.toString();
   };
 
-  const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+  const formatDate = (date: string | Date): string => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleDateString('en-US', {
+      year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -217,10 +201,10 @@ export default function HashtagCompetitionAnalysis() {
                   </Badge>
                   <Badge 
                     variant="secondary" 
-                    className={`${getDifficultyColor(data.difficulty)} flex items-center gap-1`}
+                    className={`${getDifficultyColor(data.difficulty ?? "unknown")} flex items-center gap-1`}
                   >
-                    {getDifficultyIcon(data.difficulty)}
-                    {data.difficulty.replace('_', ' ')}
+                    {getDifficultyIcon(data.difficulty ?? "unknown")}
+                    {(data.difficulty ?? "unknown").replace('_', ' ')}
                   </Badge>
                 </div>
               </div>
@@ -240,11 +224,11 @@ export default function HashtagCompetitionAnalysis() {
                   <div className="text-sm text-muted-foreground">Opportunity</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold">{formatNumber(data.totalPosts)}</div>
+                  <div className="text-2xl font-bold">{formatNumber(data.totalPosts ?? 0)}</div>
                   <div className="text-sm text-muted-foreground">Total Posts</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold">{formatNumber(data.recentPosts)}</div>
+                  <div className="text-2xl font-bold">{formatNumber(data.recentPosts ?? 0)}</div>
                   <div className="text-sm text-muted-foreground">Recent Posts</div>
                 </div>
               </div>
@@ -256,21 +240,21 @@ export default function HashtagCompetitionAnalysis() {
                     <span className="text-sm text-muted-foreground">Avg Engagement</span>
                     <span className="text-sm font-medium">{data.avgEngagement}%</span>
                   </div>
-                  <Progress value={data.avgEngagement} className="h-2" />
+                  <Progress value={parseFloat(data.avgEngagement ?? "0")} className="h-2" />
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Competition Score</span>
                     <span className="text-sm font-medium">{data.competitionScore}/100</span>
                   </div>
-                  <Progress value={data.competitionScore} className="h-2" />
+                  <Progress value={parseFloat(data.competitionScore ?? "0")} className="h-2" />
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Opportunity</span>
                     <span className="text-sm font-medium">{data.opportunity}%</span>
                   </div>
-                  <Progress value={data.opportunity} className="h-2" />
+                  <Progress value={parseFloat(data.opportunity ?? "0")} className="h-2" />
                 </div>
               </div>
 
@@ -285,19 +269,19 @@ export default function HashtagCompetitionAnalysis() {
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Direction</span>
                       <div className="flex items-center gap-2">
-                        {getTrendIcon(data.trendDirection)}
-                        <span className="text-sm font-medium capitalize">{data.trendDirection}</span>
+                        {getTrendIcon(data.trendDirection ?? "stable")}
+                        <span className="text-sm font-medium capitalize">{data.trendDirection ?? "stable"}</span>
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Growth Rate</span>
-                      <span className={`text-sm font-medium ${data.growthRate >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {data.growthRate > 0 ? '+' : ''}{data.growthRate}%
+                      <span className={`text-sm font-medium ${parseFloat(data.growthRate ?? "0") >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {parseFloat(data.growthRate ?? "0") > 0 ? '+' : ''}{data.growthRate}%
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Peak Day</span>
-                      <span className="text-sm font-medium">{data.peakEngagementDay}</span>
+                      <span className="text-sm font-medium">{data.peakEngagementDay ?? "Unknown"}</span>
                     </div>
                   </div>
                 </div>
@@ -308,7 +292,7 @@ export default function HashtagCompetitionAnalysis() {
                     Optimal Posting Times
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {data.bestPostingTimes.map((time, idx) => (
+                    {(Array.isArray(data.bestPostingTimes) ? data.bestPostingTimes : []).map((time: number, idx: number) => (
                       <Badge key={idx} variant="outline">
                         {time}:00
                       </Badge>
@@ -322,7 +306,7 @@ export default function HashtagCompetitionAnalysis() {
                 <div className="space-y-3">
                   <h4 className="font-medium">Top Content Types</h4>
                   <div className="flex flex-wrap gap-2">
-                    {data.topContentTypes.map((type, idx) => (
+                    {(Array.isArray(data.topContentTypes) ? data.topContentTypes : []).map((type: string, idx: number) => (
                       <Badge key={idx} variant="secondary" className="capitalize">
                         {type}
                       </Badge>
@@ -333,7 +317,7 @@ export default function HashtagCompetitionAnalysis() {
                 <div className="space-y-3">
                   <h4 className="font-medium">Related Hashtags</h4>
                   <div className="flex flex-wrap gap-2">
-                    {data.relatedHashtags.map((hashtag, idx) => (
+                    {(Array.isArray(data.relatedHashtags) ? data.relatedHashtags : []).map((hashtag: string, idx: number) => (
                       <Badge key={idx} variant="outline">
                         {hashtag}
                       </Badge>
@@ -349,7 +333,7 @@ export default function HashtagCompetitionAnalysis() {
                   Top Regions
                 </h4>
                 <div className="flex flex-wrap gap-2">
-                  {data.topRegions.map((region, idx) => (
+                  {(Array.isArray(data.topRegions) ? data.topRegions : []).map((region: string, idx: number) => (
                     <Badge key={idx} variant="outline">
                       {region}
                     </Badge>
@@ -376,10 +360,10 @@ export default function HashtagCompetitionAnalysis() {
                   {data.trendDirection === "rising" && (
                     <li>• Trending upward - Great time to use this hashtag</li>
                   )}
-                  {data.avgEngagement > 5 && (
+                  {parseFloat(data.avgEngagement ?? "0") > 5 && (
                     <li>• High engagement rate - Quality audience interaction</li>
                   )}
-                  <li>• Best posting time: {data.peakEngagementDay} at {data.bestPostingTimes[0]}:00</li>
+                  <li>• Best posting time: {data.peakEngagementDay ?? "Unknown"} at {(Array.isArray(data.bestPostingTimes) && data.bestPostingTimes.length > 0) ? data.bestPostingTimes[0] : 'N/A'}:00</li>
                 </ul>
               </div>
             </CardContent>

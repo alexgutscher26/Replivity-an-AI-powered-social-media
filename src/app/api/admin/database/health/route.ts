@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { NextResponse } from "next/server";
 import { auth } from "@/server/auth";
 import { 
@@ -37,7 +40,7 @@ export async function GET() {
     // Calculate performance metrics
     const avgQueryTime = Object.values(performanceSummary.queryStats)
       .filter(stat => stat && typeof stat.avg === 'number')
-      .reduce((sum, stat) => sum + (stat as any).avg, 0) / 
+      .reduce((sum, stat) => sum + (stat as { avg: number }).avg, 0) /
       Object.keys(performanceSummary.queryStats).length || 0;
 
     const response = {

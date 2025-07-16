@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import { type Metadata } from "next";
 import { ABTestingTool } from "./_components/ab-testing-tool";
 
 export const metadata: Metadata = {

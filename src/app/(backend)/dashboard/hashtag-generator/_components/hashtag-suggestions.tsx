@@ -2,8 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { TrendingUp, Hash, Copy } from "lucide-react";
+import { TrendingUp, Hash } from "lucide-react";
 import { toast } from "sonner";
 
 interface HashtagSuggestion {
@@ -92,7 +91,7 @@ export default function HashtagSuggestions({ platform = "twitter", onHashtagSele
   const allSuggestions = [...platformHashtags, ...popularHashtags];
 
   const copyHashtag = (hashtag: string) => {
-    navigator.clipboard.writeText(hashtag);
+    void navigator.clipboard.writeText(hashtag);
     toast.success(`${hashtag} copied to clipboard!`);
   };
 
@@ -121,7 +120,7 @@ export default function HashtagSuggestions({ platform = "twitter", onHashtagSele
     if (!acc[suggestion.category]) {
       acc[suggestion.category] = [];
     }
-    acc[suggestion.category].push(suggestion);
+    acc[suggestion.category]?.push(suggestion);
     return acc;
   }, {} as Record<string, HashtagSuggestion[]>);
 

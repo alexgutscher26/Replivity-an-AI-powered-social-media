@@ -11,7 +11,6 @@ export default function HashtagTemplateManager() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [hashtags, setHashtags] = useState("");
-  const [isTemplate, setIsTemplate] = useState(true);
 
   const { mutate: createTemplate } = api.templates.create.useMutation({
     onSuccess: () => {
@@ -28,7 +27,7 @@ export default function HashtagTemplateManager() {
       name,
       description,
       hashtags: hashtagList,
-      isTemplate,
+      platform: "all",
     });
   };
 

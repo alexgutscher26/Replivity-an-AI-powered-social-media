@@ -1,5 +1,6 @@
 import '@/entrypoints/style.css'
 import '@/entrypoints/x-style.content.css'
+import React from 'react'
 import ReactDOM from 'react-dom/client'
 
 import { Status } from './content/Status'
@@ -70,7 +71,7 @@ export default defineContentScript({
             container.append(wrapper)
 
             const root = ReactDOM.createRoot(wrapper)
-            root.render(<Tone source="x" />)
+            root.render(React.createElement(Tone, { source: 'x' }))
             return { root, wrapper }
           },
           onRemove: (elements) => {
@@ -102,7 +103,7 @@ export default defineContentScript({
             container.append(wrapper)
 
             const root = ReactDOM.createRoot(wrapper)
-            root.render(<Status source="x" />)
+            root.render(React.createElement(Status, { source: 'x' }))
             return { root, wrapper }
           },
           onRemove: (elements) => {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";
@@ -28,15 +29,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import {
   Sparkles,
-  Target,
-  Users,
   TrendingUp,
   Copy,
   RefreshCw,
@@ -45,6 +41,8 @@ import {
   Lightbulb,
 } from "lucide-react";
 import { useSession } from "@/hooks/use-auth-hooks";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 const bioOptimizerSchema = z.object({
   currentBio: z.string().default(""),
@@ -147,8 +145,6 @@ export function BioProfileOptimizer() {
 
     // Content analysis
     const hasEmoji = /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u.test(bio);
-    const hasHashtags = /#\w+/.test(bio);
-    const hasURL = /https?:\/\//.test(bio);
     const hasCallToAction = /\b(follow|contact|visit|check out|dm|message)\b/i.test(bio);
 
     if (!hasEmoji && platform !== "linkedin") {
@@ -188,7 +184,7 @@ export function BioProfileOptimizer() {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       const limit = platformLimits[data.platform];
-      const baseContent = data.currentBio || user?.name || "Professional";
+      const baseContent = data.currentBio || (user?.name ?? "Professional");
       
       const optimizedVersions: OptimizedBio[] = [
         {
@@ -198,7 +194,7 @@ export function BioProfileOptimizer() {
           keywords: [data.industry, "expert", "goals"],
         },
         {
-          content: `🎯 ${data.industry} Professional | ${selectedGoals[0] || "Building connections"} | Follow for insights`,
+          content: `🎯 ${data.industry} Professional | ${selectedGoals[0] ?? "Building connections"} | Follow for insights`,
           improvements: ["Clear value proposition", "Call-to-action included", "Professional tone"],
           score: 78,
           keywords: [data.industry, "professional", "insights"],
@@ -233,12 +229,12 @@ export function BioProfileOptimizer() {
   };
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+    void navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard!");
   };
 
   const onSubmit = (data: BioOptimizerFormValues) => {
-    generateOptimizedBios(data);
+    void generateOptimizedBios(data);
   };
 
   return (

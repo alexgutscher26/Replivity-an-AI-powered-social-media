@@ -54,8 +54,6 @@ import {
   TrendingUp,
   Users,
   Heart,
-  MessageCircle,
-  Share,
   Eye,
   Download,
   Plus,
@@ -223,8 +221,8 @@ export function ABTestingTool() {
       id: `test-${Date.now()}`,
       name: data.testName,
       platform: data.platform,
-      status: "running",
-      startDate: new Date().toISOString().split('T')[0],
+      status: "running" as const,
+      startDate: new Date().toISOString().split('T')[0]!,
       variants: data.variants.map(variant => ({
         name: variant.name,
         impressions: 0,
@@ -269,7 +267,7 @@ export function ABTestingTool() {
       if (test.id === testId) {
         return {
           ...test,
-          status: test.status === "running" ? "paused" : "running"
+          status: test.status === "running" ? "paused" as const : "running" as const
         };
       }
       return test;
@@ -281,7 +279,7 @@ export function ABTestingTool() {
       if (test.id === testId) {
         return {
           ...test,
-          status: "completed",
+          status: "completed" as const,
           endDate: new Date().toISOString().split('T')[0]
         };
       }
@@ -294,9 +292,8 @@ export function ABTestingTool() {
       ...test,
       id: `test-${Date.now()}`,
       name: `${test.name} (Copy)`,
-      status: "paused",
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: undefined,
+      status: "paused" as const,
+      startDate: new Date().toISOString().split('T')[0]!,
       variants: test.variants.map(variant => ({
         ...variant,
         impressions: 0,
@@ -314,6 +311,9 @@ export function ABTestingTool() {
       },
       winner: undefined,
     };
+    
+    // Remove endDate for duplicated test since it's a new test
+    delete newTest.endDate;
     
     setTestResults(prev => [newTest, ...prev]);
     toast.success("Test duplicated successfully!");
@@ -751,7 +751,7 @@ export function ABTestingTool() {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={testResults[0]?.variants || []}>
+                  <BarChart data={testResults[0]?.variants ?? []}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />

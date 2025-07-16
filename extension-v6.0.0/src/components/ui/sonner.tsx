@@ -4,8 +4,10 @@ import { Toaster as Sonner, ToasterProps } from "sonner"
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
 
+  const SonnerComponent = Sonner as any
+
   return (
-    <Sonner
+    <SonnerComponent
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       style={

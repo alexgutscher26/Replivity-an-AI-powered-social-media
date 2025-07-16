@@ -265,7 +265,7 @@ export function AiCaptionGeneratorForm() {
     try {
       await navigator.clipboard.writeText(currentCaption);
       toast.success("Caption copied to clipboard.");
-    } catch (error) {
+    } catch {
       toast.error("Failed to copy caption to clipboard.");
     }
   };

@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/trpc/react";
 import { Hash, TrendingUp } from "lucide-react";
 
@@ -24,8 +24,8 @@ export default function HashtagUsage() {
     );
   }
 
-  const total = hashtagStats?.total || 0;
-  const percentageChange = hashtagStats?.percentageChange || 0;
+  const total = hashtagStats?.total ?? 0;
+  const percentageChange = hashtagStats?.percentageChange ?? 0;
   const isPositive = percentageChange >= 0;
 
   return (

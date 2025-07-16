@@ -83,7 +83,7 @@ const mockHashtagData: HashtagPerformance[] = [
 ];
 
 export default function HashtagPerformanceAnalytics() {
-  const [selectedPlatform, setSelectedPlatform] = useState("all");
+  const [selectedPlatform] = useState("all");
   
   // API calls
   const { data: performanceData = [], isLoading } = api.hashtags.getHashtagPerformance.useQuery({
@@ -95,17 +95,17 @@ export default function HashtagPerformanceAnalytics() {
     hashtag: item.hashtag,
     platform: item.platform,
     metrics: {
-      impressions: item.impressions || 0,
-      engagements: item.engagements || 0,
-      clicks: item.clicks || 0,
-      shares: item.shares || 0,
-      saves: item.saves || 0,
-      engagementRate: parseFloat(item.engagementRate || "0"),
-      clickThroughRate: parseFloat(item.clickThroughRate || "0"),
-      trendScore: parseFloat(item.trendScore || "0"),
+      impressions: item.impressions ?? 0,
+      engagements: item.engagements ?? 0,
+      clicks: item.clicks ?? 0,
+      shares: item.shares ?? 0,
+      saves: item.saves ?? 0,
+      engagementRate: parseFloat(item.engagementRate ?? "0"),
+      clickThroughRate: parseFloat(item.clickThroughRate ?? "0"),
+      trendScore: parseFloat(item.trendScore ?? "0"),
     },
-    category: item.category || "General",
-    competitionLevel: item.competitionLevel || "Medium",
+    category: item.category ?? "General",
+    competitionLevel: item.competitionLevel ?? "Medium",
     updatedAt: item.updatedAt?.toISOString() || new Date().toISOString(),
   }));
   

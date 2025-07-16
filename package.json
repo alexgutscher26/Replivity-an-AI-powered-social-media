@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "cross-env TSC_COMPILE_ON_ERROR=true next build",
+    "build": "cross-env TSC_COMPILE_ON_ERROR=false next build",
     "check": "next lint && tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

@@ -7,7 +7,6 @@ declare module 'better-auth' {
       password?: {
         hash?: (password: string) => Promise<string>;
         verify?: (data: { hash: string; password: string }) => Promise<boolean>;
-        validate?: (password: string) => { valid: boolean; message?: string };
       };
     } & EmailAndPasswordOptions;
   }

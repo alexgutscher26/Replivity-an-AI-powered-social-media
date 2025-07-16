@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { eq, and, or, gte, lte, desc, count } from "drizzle-orm";
-import type { PgSelect } from "drizzle-orm/pg-core";
+import type { PgColumn } from "drizzle-orm/pg-core";
 import { pooledDb, queryMonitor, withRetry } from "./pool";
 import { usage } from "./schema/usage-schema";
 import { generations } from "./schema/generations-schema";
@@ -17,19 +17,18 @@ import { user } from "./schema/auth-schema";
 
 // Simple in-memory cache for frequently accessed data
 class QueryCache {
-  private cache = new Map<string, { data: any; timestamp: number; ttl: number }>();
+  private cache = new Map<string, { data: unknown; timestamp: number; ttl: number }>();
   private defaultTTL = 5 * 60 * 1000; // 5 minutes
 
-  set(key: string, data: any, ttl = this.defaultTTL): void {
+  set(key: string, data: unknown, ttl = this.defaultTTL): void {
     this.cache.set(key, {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       data,
       timestamp: Date.now(),
       ttl,
     });
   }
 
-  get(key: string): any | null {
+  get(key: string): unknown | null {
     const item = this.cache.get(key);
     if (!item) return null;
 
@@ -74,7 +73,7 @@ export async function cachedQuery<T>(
 ): Promise<T> {
   const cached = queryCache.get(key);
   if (cached) {
-    return cached;
+    return cached as T;
   }
 
   const endTimer = queryMonitor.startQuery(key);
@@ -108,9 +107,16 @@ export interface PaginationResult<T> {
   };
 }
 
+// Simplified type to avoid deep instantiation
+type QueryWithExecute<T> = {
+  execute(): Promise<T>;
+  limit(limit: number): QueryWithExecute<T>;
+  offset(offset: number): QueryWithExecute<T>;
+};
+
 export async function paginatedQuery<T>(
-  baseQuery: PgSelect,
-  countQuery: PgSelect,
+  baseQuery: QueryWithExecute<T[]>,
+  countQuery: QueryWithExecute<Array<{ count: number }>>,
   options: PaginationOptions = {}
 ): Promise<PaginationResult<T>> {
   const page = Math.max(1, options.page ?? 1);
@@ -123,11 +129,11 @@ export async function paginatedQuery<T>(
     baseQuery.limit(limit).offset(offset).execute(),
   ]);
 
-  const total = (totalResult[0] as any)?.count ?? 0;
+  const total = (totalResult[0] as { count: number } | undefined)?.count ?? 0;
   const totalPages = Math.ceil(total / limit);
 
   return {
-    data: data as T[],
+    data: data,
     pagination: {
       page,
       limit,
@@ -142,10 +148,13 @@ export async function paginatedQuery<T>(
 /**
  * Date range query helper
  */
+// Simplified column type to avoid deep instantiation
+type DrizzleColumn = PgColumn<any, any, any>;
+
 export interface DateRangeOptions {
   from?: Date;
   to?: Date;
-  column: any; // Drizzle column reference
+  column: DrizzleColumn;
 }
 
 export function buildDateRangeCondition({ from, to, column }: DateRangeOptions) {
@@ -226,7 +235,7 @@ export class GenerationQueryOptimizer {
     userId?: string,
     dateRange?: { from?: Date; to?: Date }
   ) {
-    const cacheKey = `platform_stats_${platform}_${userId ?? 'all'}_${dateRange?.from?.getTime() || 'no_from'}_${dateRange?.to?.getTime() || 'no_to'}`;
+    const cacheKey = `platform_stats_${platform}_${userId ?? 'all'}_${dateRange?.from?.getTime() ?? 'no_from'}_${dateRange?.to?.getTime() ?? 'no_to'}`;
     
     return cachedQuery(
       cacheKey,
@@ -312,7 +321,22 @@ export class GenerationQueryOptimizer {
       .from(generations)
       .where(and(...conditions));
     
-    return paginatedQuery(baseQuery, countQuery, options);
+    return paginatedQuery(
+      baseQuery as unknown as QueryWithExecute<Array<{
+        id: string;
+        createdAt: Date | null;
+        updatedAt: Date | null;
+        userId: string;
+        productId: string;
+        link: string | null;
+        source: string;
+        post: string;
+        reply: string;
+        author: string | null;
+      }>>,
+      countQuery as unknown as QueryWithExecute<Array<{ count: number }>>,
+      options
+    );
   }
 }
 

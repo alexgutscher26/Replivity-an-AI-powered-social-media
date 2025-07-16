@@ -33,9 +33,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         persistClient={false}
         replace={(href: string) => router.replace(href)}
         onSessionChange={() => router.refresh()}
-        LinkComponent={(props: React.ComponentProps<typeof Link>) => (
-          <Link {...props} href={props.href} />
-        )}
+        LinkComponent={(props: { href: string; to: unknown; className?: string; children: React.ReactNode }) => (
+        <Link href={props.href} className={props.className}>
+          {props.children}
+        </Link>
+      )}
         settingsUrl="/dashboard/settings/profile"
       >
         {children}
@@ -57,8 +59,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
       persistClient={false}
       replace={(href: string) => router.replace(href)}
       onSessionChange={() => router.refresh()}
-      LinkComponent={(props: React.ComponentProps<typeof Link>) => (
-        <Link {...props} href={props.href} />
+      LinkComponent={(props: { href: string; to: unknown; className?: string; children: React.ReactNode }) => (
+        <Link href={props.href} className={props.className}>
+          {props.children}
+        </Link>
       )}
       settingsUrl="/dashboard/settings/profile"
     >

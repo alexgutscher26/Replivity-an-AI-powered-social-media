@@ -81,11 +81,12 @@ export async function checkDatabaseHealth(): Promise<{
     
     const latency = Date.now() - startTime;
     
-    // Get connection pool stats
+    // Note: postgres-js doesn't expose runtime connection pool statistics
+    // We can only provide the configured maximum connections
     const stats = {
-      active: sql.options.max - sql.options.idle,
-      idle: sql.options.idle,
-      total: sql.options.max,
+      active: 0, // Runtime stats not available in postgres-js
+      idle: 0,   // Runtime stats not available in postgres-js
+      total: connectionConfig.max, // Use configured max connections
     };
     
     return {
@@ -125,7 +126,7 @@ export async function closeDatabaseConnections(): Promise<void> {
 export function createQueryMonitor() {
   const queryTimes = new Map<string, number[]>();
   
-  return {
+  const monitor = {
     startQuery: (queryId: string) => {
       const startTime = Date.now();
       return () => {
@@ -151,7 +152,7 @@ export function createQueryMonitor() {
     },
     
     getStats: (queryId: string) => {
-      const times = queryTimes.get(queryId) || [];
+      const times = queryTimes.get(queryId) ?? [];
       if (times.length === 0) return null;
       
       const avg = times.reduce((a, b) => a + b, 0) / times.length;
@@ -162,13 +163,15 @@ export function createQueryMonitor() {
     },
     
     getAllStats: () => {
-      const stats: Record<string, any> = {};
+      const stats: Record<string, { avg: number; min: number; max: number; count: number } | null> = {};
       for (const [queryId] of queryTimes) {
-        stats[queryId] = this.getStats(queryId);
+        stats[queryId] = monitor.getStats(queryId);
       }
       return stats;
     },
   };
+  
+  return monitor;
 }
 
 /**
