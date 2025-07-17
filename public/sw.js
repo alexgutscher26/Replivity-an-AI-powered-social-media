@@ -94,6 +94,9 @@ self.addEventListener('fetch', (event) => {
 });
 
 // Helper functions to determine request types
+/**
+ * Determines if a given request URL is for a static asset.
+ */
 function isStaticAsset(request) {
   const url = new URL(request.url);
   return (
@@ -103,16 +106,33 @@ function isStaticAsset(request) {
   );
 }
 
+/**
+ * Determines if a request is an API request based on its URL path.
+ */
 function isAPIRequest(request) {
   const url = new URL(request.url);
   return url.pathname.startsWith('/api/') || url.pathname.startsWith('/trpc/');
 }
 
+/**
+ * Checks if the given request is a page request by verifying if it accepts HTML.
+ */
 function isPageRequest(request) {
   return request.headers.get('accept')?.includes('text/html');
 }
 
 // Caching strategies
+/**
+ * Implements a cache-first strategy to fetch a resource.
+ *
+ * This function attempts to retrieve a cached response first. If a cached response is available, it returns that response.
+ * If no cached response is found, it fetches the resource from the network. If the network request is successful,
+ * it caches the response for future use and returns the network response. If any step fails, it logs an error
+ * and returns a offline response with a 503 status.
+ *
+ * @param {Request} request - The request object to be fetched.
+ * @returns {Promise<Response>} - A Promise that resolves to the response from cache or network.
+ */
 async function cacheFirst(request) {
   try {
     const cachedResponse = await caches.match(request);
@@ -133,6 +153,17 @@ async function cacheFirst(request) {
   }
 }
 
+/**
+ * Fetches a resource from the network and caches it for future use.
+ *
+ * First, it attempts to fetch the resource using the provided request.
+ * If successful, it stores the response in the cache under `DYNAMIC_CACHE_NAME`.
+ * If the network request fails, it retrieves the resource from the cache.
+ * If neither the network nor the cache provides a valid response, it returns an offline response.
+ *
+ * @param {Request} request - The request object for the resource to be fetched.
+ * @returns {Promise<Response>} A promise that resolves to the response from the network or cache.
+ */
 async function networkFirst(request) {
   try {
     const networkResponse = await fetch(request);
@@ -151,6 +182,15 @@ async function networkFirst(request) {
   }
 }
 
+/**
+ * Implements a stale-while-revalidate caching strategy for network requests.
+ *
+ * This function first attempts to retrieve a response from the cache for the given request.
+ * If a cached response is found, it returns that response immediately while simultaneously making a network request in the background.
+ * The network response is then stored in the cache if it is successful, ensuring future requests can use the updated data.
+ *
+ * @param {Request} request - The network request to be made and cached.
+ */
 async function staleWhileRevalidate(request) {
   const cache = await caches.open(DYNAMIC_CACHE_NAME);
   const cachedResponse = await cache.match(request);
@@ -172,6 +212,9 @@ self.addEventListener('sync', (event) => {
   }
 });
 
+/**
+ * Triggers a background sync operation.
+ */
 async function doBackgroundSync() {
   // Implement background sync logic here
   console.log('Background sync triggered');
