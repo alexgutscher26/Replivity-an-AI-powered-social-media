@@ -8,6 +8,16 @@ import { TRPCClientError } from '@trpc/client'
 import { AlertTriangle, Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+/**
+ * Handles tone generation based on user interaction and usage limits.
+ *
+ * This function manages the state of loading, usage data, and whether the usage limit is reached.
+ * It fetches usage data when the component mounts and checks if the usage limit is exceeded.
+ * When a button is clicked, it generates content with a specified tone if the usage limit is not reached,
+ * updates the usage data, and handles errors appropriately.
+ *
+ * @param source - The platform from which the source of the content originates.
+ */
 export function Tone({ source }: { source: SourcePlatform }) {
   const trpc = useTRPC()
   const parser = useContentParser(source)
@@ -17,6 +27,15 @@ export function Tone({ source }: { source: SourcePlatform }) {
 
   // Check usage status on component mount
   useEffect(() => {
+    /**
+     * Fetches and processes usage data from the TRPC API.
+     *
+     * This function retrieves usage data using the `trpc.usage.query()` method,
+     * updates the state with the fetched usage data, and checks if the current
+     * month's total usage has reached or exceeded the plan limit. If so, it sets
+     * the usage limit reached flag to true. Errors during the fetch operation
+     * are logged to the console.
+     */
     const checkUsage = async () => {
       try {
         const usage = await trpc.usage.query()
@@ -33,6 +52,17 @@ export function Tone({ source }: { source: SourcePlatform }) {
     checkUsage()
   }, [])
 
+  /**
+   * Handles a button click event to generate content based on selected tone and source.
+   *
+   * This function first determines the selected tone from the button's text content.
+   * It checks if the usage limit is reached and sets an error message if so.
+   * If not, it proceeds to fetch content, generates new text using `trpc.generate.mutate`,
+   * updates the parser with the generated text, and increments the usage data.
+   * It also handles potential errors, updating the usage limit status and setting appropriate error messages.
+   *
+   * @param e - The React mouse event object associated with the button click.
+   */
   const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     const tone = tones.find(({ emoji }) => emoji === e.currentTarget.textContent)
     if (!tone)
