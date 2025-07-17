@@ -9,8 +9,8 @@ import { statusSchema } from '@/schemas/status'
 import { tones } from '@/schemas/tone'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { TRPCClientError } from '@trpc/client'
-import { Loader2 } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { AlertTriangle, Loader2 } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 export function Status({ source }: { source: SourcePlatform }) {
@@ -18,6 +18,26 @@ export function Status({ source }: { source: SourcePlatform }) {
   const parser = useContentParser(source)
   const formRef = useRef<HTMLFormElement>(null)
   const [loadingTone, setLoadingTone] = useState<null | string>(null)
+  const [usageData, setUsageData] = useState<any>(null)
+  const [usageLimitReached, setUsageLimitReached] = useState(false)
+
+  // Check usage status on component mount
+  useEffect(() => {
+    const checkUsage = async () => {
+      try {
+        const usage = await trpc.usage.query()
+        setUsageData(usage)
+        // Check if usage limit is reached
+        if (usage?.currentMonthTotal >= usage?.planLimit) {
+          setUsageLimitReached(true)
+        }
+      }
+      catch (error) {
+        console.error('Failed to fetch usage:', error)
+      }
+    }
+    checkUsage()
+  }, [])
 
   const form = useForm<StatusFormData>({
     defaultValues: {
@@ -28,6 +48,12 @@ export function Status({ source }: { source: SourcePlatform }) {
   })
 
   const onSubmit = async (formData: StatusFormData) => {
+    // Check if usage limit is reached before attempting generation
+    if (usageLimitReached) {
+      await parser.setText('Usage limit exceeded for current billing period. Please upgrade your plan to continue.', formRef.current || undefined)
+      return
+    }
+
     setLoadingTone(formData.tone)
     try {
       const response = await trpc.generate.mutate({
@@ -40,9 +66,28 @@ export function Status({ source }: { source: SourcePlatform }) {
         return
 
       await parser.setText(response.text, formRef.current || undefined)
+
+      // Update usage data after successful generation
+      if (usageData) {
+        const newUsageData = {
+          ...usageData,
+          currentMonthTotal: usageData.currentMonthTotal + 1,
+        }
+        setUsageData(newUsageData)
+        // Check if limit is now reached
+        if (newUsageData.currentMonthTotal >= newUsageData.planLimit) {
+          setUsageLimitReached(true)
+        }
+      }
     }
     catch (error) {
-      await parser.setText(error instanceof TRPCClientError ? error.message : 'Error: Unknown error', formRef.current || undefined)
+      if (error instanceof TRPCClientError && error.data?.code === 'FORBIDDEN') {
+        setUsageLimitReached(true)
+        await parser.setText('Usage limit exceeded for current billing period. Please upgrade your plan to continue.', formRef.current || undefined)
+      }
+      else {
+        await parser.setText(error instanceof TRPCClientError ? error.message : 'Error: Unknown error', formRef.current || undefined)
+      }
     }
     finally {
       setLoadingTone(null)
@@ -51,6 +96,12 @@ export function Status({ source }: { source: SourcePlatform }) {
 
   return (
     <Form {...form}>
+      {usageLimitReached && (
+        <div className="flex items-center gap-2 text-xs text-red-500 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded mb-2">
+          <AlertTriangle className="h-3 w-3" />
+          <span>Usage limit reached</span>
+        </div>
+      )}
       <form
         className="flex gap-2"
         onSubmit={form.handleSubmit(onSubmit)}
@@ -99,7 +150,11 @@ export function Status({ source }: { source: SourcePlatform }) {
             </FormItem>
           )}
         />
-        <Button disabled={!form.formState.isValid || loadingTone !== null} type="submit">
+        <Button
+          disabled={!form.formState.isValid || loadingTone !== null || usageLimitReached}
+          title={usageLimitReached ? 'Usage limit exceeded' : 'Generate status'}
+          type="submit"
+        >
           {loadingTone
             ? (
                 <>
@@ -113,6 +168,15 @@ export function Status({ source }: { source: SourcePlatform }) {
               )}
         </Button>
       </form>
+      {usageData && (
+        <div className="text-xs text-gray-500 mt-2">
+          {usageData.currentMonthTotal}
+          /
+          {usageData.planLimit}
+          {' '}
+          used this month
+        </div>
+      )}
     </Form>
   )
 }
