@@ -1,0 +1,26 @@
+<svg width="1200" height="600" viewBox="0 0 1200 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="twitterBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1da1f2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d8bd9;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#twitterBg)"/>
+  
+  <!-- Main Title -->
+  <text x="600" y="180" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="64" font-weight="bold">Replivity</text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="250" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="32" opacity="0.9">AI Social Media Replier</text>
+  
+  <!-- Description -->
+  <text x="600" y="320" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="22" opacity="0.8">Smart AI replies for all your social platforms</text>
+  
+  <!-- AI Icon -->
+  <circle cx="600" cy="420" r="50" fill="#ffffff"/>
+  <path d="M575 405h50v8h-50v-8zm0 16h38v8h-38v-8zm0 16h50v8h-50v-8z" fill="#1da1f2"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="150" cy="120" r="25" fill="#ffffff" opacity="0.3"/>
+  <circle cx="1050" cy="450" r="35" fill="#ffffff" opacity="0.2"/>
+</svg>

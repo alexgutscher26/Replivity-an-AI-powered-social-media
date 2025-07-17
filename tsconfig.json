@@ -47,6 +47,7 @@
   ],
   "exclude": [
     "node_modules",
-    "extension-v6.0.0"
+    "extension-v6.0.0",
+    "public/sw.js"
   ]
 }

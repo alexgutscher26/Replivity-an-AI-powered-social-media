@@ -1,0 +1,28 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1a1a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Main Title -->
+  <text x="600" y="200" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="72" font-weight="bold">Replivity</text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="280" text-anchor="middle" fill="#cccccc" font-family="Arial, sans-serif" font-size="36">AI Social Media Replier</text>
+  
+  <!-- Description -->
+  <text x="600" y="350" text-anchor="middle" fill="#999999" font-family="Arial, sans-serif" font-size="24">Generate engaging replies across platforms with AI</text>
+  
+  <!-- AI Icon -->
+  <circle cx="600" cy="450" r="60" fill="#00ff88"/>
+  <path d="M570 430h60v10h-60v-10zm0 20h45v10h-45v-10zm0 20h60v10h-60v-10z" fill="#000000"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="200" cy="150" r="30" fill="#00ff88" opacity="0.3"/>
+  <circle cx="1000" cy="480" r="40" fill="#00ff88" opacity="0.2"/>
+  <rect x="100" y="500" width="80" height="80" rx="10" fill="#333333" opacity="0.5"/>
+  <rect x="1020" y="100" width="60" height="60" rx="8" fill="#333333" opacity="0.5"/>
+</svg>
