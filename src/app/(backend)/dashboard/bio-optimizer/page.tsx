@@ -59,6 +59,9 @@ const bioOptimizerStructuredData = {
   }
 };
 
+/**
+ * Renders the Bio & Profile Optimizer page with structured data and a title.
+ */
 export default function BioOptimizerPage() {
   return (
     <>

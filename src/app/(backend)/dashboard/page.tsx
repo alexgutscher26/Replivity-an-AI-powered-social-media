@@ -65,6 +65,9 @@ const dashboardStructuredData = {
   }
 };
 
+/**
+ * Renders the DashboardPage component displaying various usage statistics and analytics.
+ */
 export default async function DashboardPage() {
   return (
     <>
