@@ -46,6 +46,17 @@ interface EditBlogPostProps {
   }>;
 }
 
+/**
+ * React component for editing a blog post.
+ *
+ * This component is responsible for rendering a form to edit a blog post's details,
+ * including its title, slug, content, SEO settings, categories, and tags.
+ * It also provides functionality to create new categories and tags.
+ *
+ * @param {Object} props - The component props.
+ * @param {Promise<{ id: string }>} props.params.id - The ID of the blog post to be edited.
+ * @returns {JSX.Element} The JSX element representing the edit blog post form.
+ */
 export default function EditBlogPost({ params }: EditBlogPostProps) {
   const router = useRouter();
   const [postId, setPostId] = useState<number | null>(null);
@@ -123,6 +134,9 @@ export default function EditBlogPost({ params }: EditBlogPostProps) {
     }
   }, [post]);
 
+  /**
+   * Generates a URL-friendly slug from a given title.
+   */
   const generateSlug = (title: string) => {
     return title
       .toLowerCase()
@@ -132,6 +146,13 @@ export default function EditBlogPost({ params }: EditBlogPostProps) {
       .trim();
   };
 
+  /**
+   * Handles changes to the form title and updates the form data accordingly.
+   *
+   * This function updates the form data with the new title. If `autoSlug` is true,
+   * it generates a slug based on the new title; otherwise, it retains the previous slug.
+   * If `formData` is not available, the function does nothing.
+   */
   const handleTitleChange = (title: string) => {
     if (!formData) return;
     setFormData(prev => prev ? {
@@ -141,6 +162,14 @@ export default function EditBlogPost({ params }: EditBlogPostProps) {
     } : null);
   };
 
+  /**
+   * Handles the submission of post data.
+   *
+   * This function processes and validates the form data, updating the post status if necessary,
+   * and handles any validation errors by setting field-specific error messages and displaying a toast notification.
+   *
+   * @param status - An optional string representing the new status of the post ("draft", "published", or "archived").
+   */
   const handleSubmit = async (status?: "draft" | "published" | "archived") => {
     if (!formData || postId === null) return;
 
@@ -171,6 +200,13 @@ export default function EditBlogPost({ params }: EditBlogPostProps) {
     }
   };
 
+  /**
+   * Handles the deletion of a post.
+   *
+   * This function first checks if the `postId` is null, and if so, it returns early without performing any action.
+   * If `postId` is valid, it prompts the user with a confirmation dialog. If the user confirms, it proceeds to delete
+   * the post by calling the `mutateAsync` method of `deletePost`, passing the `postId` as an argument.
+   */
   const handleDelete = async () => {
     if (postId === null) return;
     if (confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
@@ -178,6 +214,9 @@ export default function EditBlogPost({ params }: EditBlogPostProps) {
     }
   };
 
+  /**
+   * Handles the creation of a new category by validating input and triggering a mutation.
+   */
   const handleCreateCategory = async () => {
     if (!newCategory.trim()) return;
     await createCategory.mutateAsync({
@@ -186,6 +225,9 @@ export default function EditBlogPost({ params }: EditBlogPostProps) {
     });
   };
 
+  /**
+   * Creates a tag with the trimmed value of `newTag` and its corresponding slug.
+   */
   const handleCreateTag = async () => {
     if (!newTag.trim()) return;
     await createTag.mutateAsync({
@@ -194,6 +236,13 @@ export default function EditBlogPost({ params }: EditBlogPostProps) {
     });
   };
 
+  /**
+   * Toggles the inclusion of a category ID in the form data's category IDs array.
+   *
+   * This function checks if `formData` is truthy. If it is, it updates the `categoryIds`
+   * property by either removing or adding the specified `categoryId`, depending on its
+   * current presence in the array. If `formData` is falsy, the function does nothing.
+   */
   const toggleCategory = (categoryId: number) => {
     if (!formData) return;
     setFormData(prev => prev ? {
@@ -204,6 +253,14 @@ export default function EditBlogPost({ params }: EditBlogPostProps) {
     } : null);
   };
 
+  /**
+   * Toggles a tag's inclusion in the form data.
+   *
+   * This function checks if `formData` exists. If it does, it toggles the presence of
+   * `tagId` within the `tagIds` array of `formData`. If `tagId` is already present,
+   * it removes it; otherwise, it adds it. The updated `formData` is then set using
+   * a functional update pattern.
+   */
   const toggleTag = (tagId: number) => {
     if (!formData) return;
     setFormData(prev => prev ? {
