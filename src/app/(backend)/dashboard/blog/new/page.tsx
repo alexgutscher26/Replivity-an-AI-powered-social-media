@@ -33,6 +33,17 @@ const createPostSchema = z.object({
 
 type CreatePostData = z.infer<typeof createPostSchema>;
 
+/**
+ * NewBlogPost component for creating a new blog post.
+ *
+ * This component manages the state of a new blog post, including form data, categories,
+ * tags, and errors. It fetches available categories and tags using queries and provides
+ * functionality to create new categories and tags. The component also handles generating
+ * slugs from titles, toggling category and tag selections, and submitting the post for
+ * either draft or published status.
+ *
+ * @returns A React component rendering a form for creating a new blog post.
+ */
 export default function NewBlogPost() {
   const router = useRouter();
   const [formData, setFormData] = useState<CreatePostData>({
@@ -81,6 +92,9 @@ export default function NewBlogPost() {
     },
   });
 
+  /**
+   * Generates a slug from a given title by converting it to lowercase, removing non-alphanumeric characters except spaces and hyphens, replacing multiple spaces or hyphens with a single hyphen, and trimming the result.
+   */
   const generateSlug = (title: string) => {
     return title
       .toLowerCase()
@@ -90,6 +104,9 @@ export default function NewBlogPost() {
       .trim();
   };
 
+  /**
+   * Updates form data with a new title and optionally generates a new slug.
+   */
   const handleTitleChange = (title: string) => {
     setFormData(prev => ({
       ...prev,
@@ -98,6 +115,15 @@ export default function NewBlogPost() {
     }));
   };
 
+  /**
+   * Handles form submission by validating and submitting post data.
+   *
+   * It prepares the data to be submitted based on the status, validates it using createPostSchema,
+   * and then attempts to mutate the data asynchronously. If validation fails, it catches the ZodError,
+   * extracts the field errors, and sets them in the state while displaying an error toast.
+   *
+   * @param status - The publication status of the post, either "draft" or "published".
+   */
   const handleSubmit = async (status: "draft" | "published") => {
     try {
       const dataToSubmit = {
@@ -126,6 +152,9 @@ export default function NewBlogPost() {
     }
   };
 
+  /**
+   * Handles creating a new category by validating input and mutating state.
+   */
   const handleCreateCategory = async () => {
     if (!newCategory.trim()) return;
     await createCategory.mutateAsync({
@@ -134,6 +163,9 @@ export default function NewBlogPost() {
     });
   };
 
+  /**
+   * Creates a new tag if the input is not empty.
+   */
   const handleCreateTag = async () => {
     if (!newTag.trim()) return;
     await createTag.mutateAsync({
@@ -142,6 +174,9 @@ export default function NewBlogPost() {
     });
   };
 
+  /**
+   * Toggles the inclusion of a category ID in the form data.
+   */
   const toggleCategory = (categoryId: number) => {
     setFormData(prev => ({
       ...prev,
@@ -151,6 +186,9 @@ export default function NewBlogPost() {
     }));
   };
 
+  /**
+   * Toggles a tag by its ID in the form data.
+   */
   const toggleTag = (tagId: number) => {
     setFormData(prev => ({
       ...prev,
