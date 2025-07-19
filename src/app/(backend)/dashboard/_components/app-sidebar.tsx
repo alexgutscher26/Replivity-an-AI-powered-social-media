@@ -174,6 +174,16 @@ const getPlanStyling = (planName: string) => {
   };
 };
 
+/**
+ * Renders the application sidebar component.
+ *
+ * This function fetches user session, site settings, and current billing plan data.
+ * It filters navigation items based on admin permissions and renders the sidebar with the site logo,
+ * name, and plan information. The sidebar includes main navigation, secondary navigation, and a footer for user actions.
+ *
+ * @param props - Props passed to the Sidebar component.
+ * @returns A JSX element representing the application sidebar.
+ */
 export default function AppSidebar({
   ...props
 }: ComponentProps<typeof Sidebar>) {
