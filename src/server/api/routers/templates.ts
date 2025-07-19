@@ -47,7 +47,7 @@ export const templatesRouter = createTRPCRouter({
         ),
       });
 
-      const usageLimit = userSubscription.product.name.toLowerCase().includes("pro") ? 100 : 20; // Example limits
+      const usageLimit = (userSubscription.product as { name?: string })?.name?.toLowerCase().includes("pro") ? 100 : 20; // Example limits
       const currentCount = currentUsage?.used ?? 0;
 
       if (currentCount >= usageLimit) {
@@ -228,7 +228,7 @@ export const templatesRouter = createTRPCRouter({
         where: (usage, { eq }) => eq(usage.userId, userId),
       });
 
-      const usageLimit = userSubscription.product.name.toLowerCase().includes("pro") ? 100 : 20;
+      const usageLimit = (userSubscription.product as { name?: string })?.name?.toLowerCase().includes("pro") ? 100 : 20;
       const currentCount = currentUsage?.used ?? 0;
 
       if (currentCount >= usageLimit) {
@@ -305,7 +305,7 @@ export const templatesRouter = createTRPCRouter({
         where: (usage, { eq }) => eq(usage.userId, userId),
       });
 
-      const usageLimit = userSubscription?.product.name.toLowerCase().includes("pro") ? 100 : 20;
+      const usageLimit = (userSubscription?.product as { name?: string } | undefined)?.name?.toLowerCase().includes("pro") ? 100 : 20;
       const currentCount = currentUsage?.used ?? 0;
 
       return {

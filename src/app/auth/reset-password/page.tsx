@@ -128,7 +128,7 @@ export default function ResetPasswordPage() {
       // After successful password change, mark reset as completed
       await completeResetMutation.mutateAsync();
       
-    } catch (_error) {
+    } catch {
       toast.error("Failed to reset password. Please try again.");
     } finally {
       setIsSubmitting(false);

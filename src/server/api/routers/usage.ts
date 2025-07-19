@@ -35,7 +35,7 @@ export const usageRouter = createTRPCRouter({
 
     return {
       used: currentUsage?.used ?? 0,
-      limit: activeBilling.product.limit ?? 0,
+      limit: (activeBilling.product as { limit?: number })?.limit ?? 0,
       productId: activeBilling.productId,
       periodStart: activeBilling.currentPeriodStart,
       periodEnd: activeBilling.currentPeriodEnd,

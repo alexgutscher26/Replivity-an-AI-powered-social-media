@@ -46,7 +46,7 @@ export const billingsRouter = createTRPCRouter({
           },
         });
 
-        if (existingFreePlan?.product?.isFree) {
+        if (existingFreePlan && (existingFreePlan.product as { isFree?: boolean })?.isFree) {
           await ctx.db
             .update(billing)
             .set({
@@ -351,9 +351,9 @@ export const billingsRouter = createTRPCRouter({
     return results.map((sale) => ({
       id: sale.id,
       amount: Number(sale.amount),
-      email: sale.user.email,
-      name: sale.user.name,
-      image: sale.user.image,
+      email: (sale.user as { email?: string })?.email,
+      name: (sale.user as { name?: string })?.name,
+      image: (sale.user as { image?: string })?.image,
       createdAt: sale.createdAt,
     }));
   }),

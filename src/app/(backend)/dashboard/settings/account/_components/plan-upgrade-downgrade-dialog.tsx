@@ -94,7 +94,7 @@ export default function PlanUpgradeDowngradeDialog() {
     // always use checkout flow
     if (
       !currentBilling ||
-      currentBilling.product?.isFree ||
+      (currentBilling.product as { isFree?: boolean })?.isFree ||
       !currentBilling.providerId ||
       selectedProduct?.isFree
     ) {

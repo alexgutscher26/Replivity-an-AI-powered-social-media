@@ -40,7 +40,7 @@ export const generationRouter = createTRPCRouter({
       });
 
       const usageCount = currentUsage?.used ?? 0;
-      const usageLimit = activeBilling.product.limit ?? 0;
+      const usageLimit = (activeBilling.product as { limit?: number })?.limit ?? 0;
 
       // Check if user has exceeded their limit (skip for admins)
       if (ctx.session.user.role !== "admin" && usageCount >= usageLimit) {
@@ -483,7 +483,7 @@ Custom Prompt: ${customPrompt}`;
           source: result.source,
           total: Number(result.total ?? 0),
         })),
-        planLimit: activeBilling?.product?.limit ?? 0,
+        planLimit: (activeBilling?.product as { limit?: number } | undefined)?.limit ?? 0,
         currentMonthTotal,
         currentMonth: now.toLocaleString("default", { month: "long" }),
       };

@@ -17,9 +17,11 @@ import {
   ChartArea,
   Command,
   FileChartLine,
+  FileText,
   ImageIcon,
   LayoutDashboard,
   LifeBuoy,
+  MessageSquare,
   PieChart,
   Settings2,
   Users2,
@@ -68,6 +70,18 @@ const SIDEBAR_DATA: SidebarData = {
       title: "Bio & Profile Optimizer",
       url: "/dashboard/bio-optimizer",
       icon: User,
+    },
+    {
+      title: "Blog Management",
+      url: "/dashboard/blog",
+      icon: FileText,
+      requireAdmin: true,
+    },
+    {
+      title: "Comment Moderation",
+      url: "/dashboard/comments",
+      icon: MessageSquare,
+      requireAdmin: true,
     },
     // TODO: Need to fix / completely add full functionality    
     // {
@@ -176,7 +190,7 @@ export default function AppSidebar({
   );
 
   const siteName = siteSettings?.name ?? DEFAULT_SITE_NAME;
-  const planName = currentPlan?.product?.name ?? DEFAULT_PLAN_NAME;
+  const planName = (currentPlan?.product as { name?: string })?.name ?? DEFAULT_PLAN_NAME;
   const logoSrc = siteSettings?.logo ?? undefined;
   const planStyling = getPlanStyling(planName);
 

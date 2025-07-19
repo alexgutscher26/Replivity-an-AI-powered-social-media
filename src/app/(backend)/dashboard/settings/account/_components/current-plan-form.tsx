@@ -55,10 +55,10 @@ export default function CurrentPlanForm() {
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
                 <FormLabel className="text-base">
-                  {currentBilling?.product?.name ?? "No plan"}
+                  {(currentBilling?.product as { name?: string })?.name ?? "No plan"}
                 </FormLabel>
                 <FormDescription>
-                  {currentBilling?.product?.description ??
+                  {(currentBilling?.product as { description?: string })?.description ??
                     "Subscribe to a plan to access more features."}
                 </FormDescription>
               </div>
@@ -68,7 +68,7 @@ export default function CurrentPlanForm() {
                     <Loader2 className="size-4 animate-spin" />
                   </Button>
                 ) : currentBilling?.status === "active" ? (
-                  currentBilling.product?.isFree ? (
+                  (currentBilling.product as { isFree?: boolean })?.isFree ? (
                     <PlanUpgradeDowngradeDialog />
                   ) : (
                     <Button
