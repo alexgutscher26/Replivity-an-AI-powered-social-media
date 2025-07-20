@@ -163,6 +163,16 @@ export class FacebookParser extends BaseParser implements ContentParser {
     }
   }
 
+  /**
+   * Determines if an image is a valid content image based on various criteria.
+   *
+   * This function checks if the image source starts with certain patterns (like SVG or emoji),
+   * contains specific hostnames, has dimensions below a threshold, or belongs to specific classes.
+   * If any of these conditions are met, the function returns false indicating it's not a valid content image.
+   *
+   * @param img - The HTMLImageElement to validate.
+   * @returns A boolean indicating whether the image is considered a valid content image.
+   */
   private isValidContentImage(img: HTMLImageElement): boolean {
     const src = img.src || ''
 
