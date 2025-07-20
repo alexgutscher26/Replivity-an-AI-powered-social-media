@@ -13,6 +13,15 @@ import { AlertTriangle, Loader2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
+/**
+ * Status component to generate and manage status updates based on user input.
+ *
+ * This component initializes a form with fields for keywords and tone, checks usage limits,
+ * and handles form submission to generate status updates. It also displays usage data and
+ * alerts if the usage limit is reached.
+ *
+ * @param source - The platform source from which the content is generated.
+ */
 export function Status({ source }: { source: SourcePlatform }) {
   const trpc = useTRPC()
   const parser = useContentParser(source)
@@ -23,6 +32,16 @@ export function Status({ source }: { source: SourcePlatform }) {
 
   // Check usage status on component mount
   useEffect(() => {
+    /**
+     * Fetches and processes the current usage data from the API.
+     *
+     * This function queries the usage data using `trpc.usage.query()`. If successful,
+     * it updates the state with the fetched usage data using `setUsageData(usage)`.
+     * It then checks if the current month's total usage has reached or exceeded
+     * the plan limit. If so, it sets the `usageLimitReached` state to true.
+     *
+     * In case of an error during the fetch operation, it logs the error to the console.
+     */
     const checkUsage = async () => {
       try {
         const usage = await trpc.usage.query()
@@ -47,6 +66,16 @@ export function Status({ source }: { source: SourcePlatform }) {
     resolver: zodResolver(statusSchema),
   })
 
+  /**
+   * Handles form submission and processes the generated status text.
+   *
+   * This function checks if the usage limit is reached before attempting generation.
+   * If not, it proceeds to generate the status text using the provided form data,
+   * updates the usage data, and handles any potential errors during the process.
+   * It also ensures that the loading tone is reset regardless of the outcome.
+   *
+   * @param formData - An object containing the keyword, tone, and other relevant form data.
+   */
   const onSubmit = async (formData: StatusFormData) => {
     // Check if usage limit is reached before attempting generation
     if (usageLimitReached) {
