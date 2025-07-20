@@ -170,7 +170,14 @@ export class FacebookParser extends BaseParser implements ContentParser {
     if (
       src.startsWith('data:image/svg+xml') // SVG icons
       || src.includes('emoji') // Emoji images
-      || src.includes('static.xx.fbcdn.net') // Facebook UI assets
+      || (() => {
+           try {
+             const hostname = new URL(src).hostname;
+             return hostname === 'static.xx.fbcdn.net';
+           } catch {
+             return false; // If URL parsing fails, treat as invalid
+           }
+         })() // Facebook UI assets
       || img.width < 50 // Small icons
       || img.height < 50 // Small icons
       || img.classList.contains('x16dsc37') // Reaction icons class
