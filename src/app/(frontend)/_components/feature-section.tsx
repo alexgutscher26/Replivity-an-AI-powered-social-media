@@ -1,6 +1,9 @@
 import { Activity, DraftingCompass, Mail, Zap } from "lucide-react";
 import Image from "next/image";
 
+/**
+ * Renders the Features section with social media growth highlights and an illustration.
+ */
 export default function FeaturesSection() {
   return (
     <section className="relative bg-black py-16 md:py-32 isolate overflow-hidden" id="features">
