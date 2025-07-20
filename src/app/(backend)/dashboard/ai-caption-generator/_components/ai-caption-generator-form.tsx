@@ -106,6 +106,23 @@ const platformFormatting = {
   }
 };
 
+/**
+ * React component for generating AI captions from uploaded images.
+ *
+ * This component provides a user interface to upload an image, configure various options such as platform, tone,
+ * additional context, and the number of caption variations. Once configured, it generates AI captions based on these settings
+ * and displays them for the user to copy or download.
+ *
+ * The main functionalities include:
+ * - Handling image uploads and displaying the uploaded image preview.
+ * - Configuring various options through form fields.
+ * - Generating captions using an AI service when the "Generate Caption" button is clicked.
+ * - Displaying generated captions with options to select different variations, copy, or download them.
+ *
+ * Dependencies: react, next/image, shadcn-ui components for forms and select inputs, zod for form validation,
+ * axios for making API requests to the AI service.
+ *
+ */
 export function AiCaptionGeneratorForm() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [generatedCaptions, setGeneratedCaptions] = useState<string[]>([]);
@@ -157,6 +174,15 @@ export function AiCaptionGeneratorForm() {
     },
   });
 
+  /**
+   * Handles the uploading of image files.
+   *
+   * This function checks if the provided file list is valid, validates the file type to ensure it's an image,
+   * and verifies that the file size does not exceed 4MB. If any validation fails, it displays an error message.
+   * Otherwise, it starts the upload process for the selected file.
+   *
+   * @param files - A FileList object containing the files to be uploaded, or null/undefined if no files are selected.
+   */
   const handleImageUpload = async (files: FileList | null | undefined) => {
     if (!files || files.length === 0) return;
 
@@ -178,6 +204,14 @@ export function AiCaptionGeneratorForm() {
     await startUpload([file]);
   };
 
+  /**
+   * Handles form submission for generating image captions.
+   *
+   * This function processes user input, constructs a detailed prompt based on various settings and preferences,
+   * and triggers a mutation to generate caption variations using the constructed prompt.
+   *
+   * @param data - An object containing form values such as context, hashtags, mentions, platform, tone, and number of variations.
+   */
   const onSubmit = async (data: CaptionGeneratorFormValues) => {
     if (!uploadedImage) {
       toast.error("Please upload an image first.");
@@ -258,6 +292,13 @@ export function AiCaptionGeneratorForm() {
     });
   };
 
+  /**
+   * Copies the currently selected caption to the clipboard.
+   *
+   * This function retrieves the caption at the `selectedCaptionIndex` from the `generatedCaptions` array.
+   * If the caption exists, it attempts to copy it to the clipboard using the Clipboard API.
+   * Success or failure is indicated by a toast notification.
+   */
   const copyToClipboard = async () => {
     const currentCaption = generatedCaptions[selectedCaptionIndex];
     if (!currentCaption) return;
@@ -270,6 +311,9 @@ export function AiCaptionGeneratorForm() {
     }
   };
 
+  /**
+   * Downloads the currently selected caption as a text file.
+   */
   const downloadCaption = () => {
     const currentCaption = generatedCaptions[selectedCaptionIndex];
     if (!currentCaption) return;
