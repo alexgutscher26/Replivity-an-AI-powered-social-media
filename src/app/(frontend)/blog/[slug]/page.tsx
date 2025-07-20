@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { api } from "@/trpc/server";
 import { db } from "@/server/db";
 import { blogPosts } from "@/server/db/schema/post-schema";
@@ -108,7 +109,7 @@ function RelatedPosts({ posts }: { posts: any[] }) {
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
-                    {formatDistanceToNow(new Date(post.publishedAt ?? post.createdAt), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(post.publishedAt ?? post.createdAt ?? new Date()), { addSuffix: true })}
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
@@ -178,135 +179,188 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const relatedPosts = relatedPostsData.posts.filter(p => p.id !== post.id).slice(0, 3);
   
   const currentUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/blog/${post.slug}`;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+
+  // Generate structured data for SEO
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.title,
+    "description": post.excerpt,
+    "image": post.featuredImage ? `${baseUrl}${post.featuredImage}` : `${baseUrl}/og-image.svg`,
+    "author": {
+      "@type": "Organization",
+      "name": "Replivity Team",
+      "url": baseUrl,
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Replivity",
+      "url": baseUrl,
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${baseUrl}/og-image.svg`,
+      },
+    },
+    "datePublished": new Date(post.publishedAt ?? post.createdAt ?? new Date()).toISOString(),
+    "dateModified": new Date(post.updatedAt ?? new Date()).toISOString(),
+    "url": currentUrl,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": currentUrl,
+    },
+    "articleSection": post.categories.map((pc: any) => pc.category.name),
+    "keywords": post.seoKeywords ?? post.tags.map((pt: any) => pt.tag.name).join(", "),
+    "wordCount": post.readingTime ? post.readingTime * 200 : undefined,
+    "timeRequired": post.readingTime ? `PT${post.readingTime}M` : undefined,
+    "inLanguage": "en-US",
+    "isAccessibleForFree": true,
+  };
   
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Back Button */}
-      <div className="mb-8">
-        <Link href="/blog">
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Blog
-          </Button>
-        </Link>
-      </div>
+    <>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
       
-      <div className="grid gap-8 lg:grid-cols-4">
-        {/* Main Content */}
-        <div className="lg:col-span-3">
-          <article>
-            {/* Header */}
-            <header className="mb-8">
-              {/* Categories */}
-              <div className="flex items-center gap-2 mb-4">
-                {post.categories.map((pc) => (
-                  <Badge key={pc.category.id} variant="secondary">
-                    <Link href={`/blog?category=${pc.category.slug}`}>
-                      {pc.category.name}
-                    </Link>
-                  </Badge>
-                ))}
-              </div>
-              
-              {/* Title */}
-              <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-              
-              {/* Excerpt */}
-              {post.excerpt && (
-                <p className="text-xl text-muted-foreground mb-6">
-                  {post.excerpt}
-                </p>
-              )}
-              
-              {/* Meta Info */}
-              <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground mb-6">
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  <time dateTime={new Date(post.publishedAt ?? post.createdAt).toISOString()}>
-                    {format(new Date(post.publishedAt ?? post.createdAt), 'MMMM d, yyyy')}
-                  </time>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  {post.readingTime} min read
-                </div>
-                <div className="flex items-center gap-1">
-                  <Eye className="h-4 w-4" />
-                  {post.viewCount} views
-                </div>
-              </div>
-              
-              {/* Share Buttons */}
-              <ShareButtons post={post} url={currentUrl} />
-            </header>
-            
-            {/* Featured Image */}
-            {post.featuredImage && (
-              <div className="relative aspect-video mb-8 overflow-hidden rounded-lg">
-                <Image
-                  src={post.featuredImage}
-                  alt={post.title}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            )}
-            
-            {/* Content */}
-            <div className="prose prose-lg max-w-none mb-8">
-              {/* Simple content rendering - in a real app, you'd use a markdown parser */}
-              <div className="whitespace-pre-wrap">
-                {post.content}
-              </div>
-            </div>
-            
-            <Separator className="my-8" />
-            
-            {/* Tags */}
-            {post.tags.length > 0 && (
-              <div className="mb-8">
-                <h3 className="font-semibold mb-3">Tags</h3>
-                <div className="flex flex-wrap gap-2">
-                  {post.tags.map((pt) => (
-                    <Badge key={pt.tag.id} variant="outline">
-                      <Link href={`/blog?tag=${pt.tag.slug}`}>
-                        #{pt.tag.name}
-                      </Link>
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Share Again */}
-            <div className="flex items-center justify-between p-6 bg-muted rounded-lg">
-              <div>
-                <h3 className="font-semibold mb-1">Enjoyed this article?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Share it with your network!
-                </p>
-              </div>
-              <ShareButtons post={post} url={currentUrl} />
-            </div>
-          </article>
-          
-          {/* Related Posts */}
-          <RelatedPosts posts={relatedPosts} />
-          
-          {/* Comments Section */}
-          <div className="mt-16">
-            <h2 className="text-2xl font-bold mb-8">Comments</h2>
-            <CommentList postId={post.id} />
-          </div>
+      <div className="container mx-auto px-4 py-8">
+        {/* Back Button */}
+        <div className="mb-8">
+          <Link href="/blog">
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Blog
+            </Button>
+          </Link>
         </div>
         
-        {/* Sidebar */}
-        <div className="lg:col-span-1">
-          <TableOfContents content={post.content} />
+        <div className="grid gap-8 lg:grid-cols-4">
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            <article>
+              {/* Header */}
+              <header className="mb-8">
+                {/* Categories */}
+                {post.categories && post.categories.length > 0 && (
+                  <div className="flex items-center gap-2 mb-4">
+                    {post.categories.map((pc: any) => (
+                      <Badge key={pc.category.id} variant="secondary">
+                        <Link href={`/blog?category=${pc.category.slug}`}>
+                          {pc.category.name}
+                        </Link>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Title */}
+                <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+                
+                {/* Excerpt */}
+                {post.excerpt && (
+                  <p className="text-xl text-muted-foreground mb-6">
+                    {post.excerpt}
+                  </p>
+                )}
+                
+                {/* Meta Info */}
+                <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground mb-6">
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-4 w-4" />
+                    <time dateTime={new Date(post.publishedAt ?? post.createdAt ?? new Date()).toISOString()}>
+                      {format(new Date(post.publishedAt ?? post.createdAt ?? new Date()), 'MMMM d, yyyy')}
+                    </time>
+                  </div>
+                  {post.readingTime && (
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-4 w-4" />
+                      {post.readingTime} min read
+                    </div>
+                  )}
+                  {post.viewCount !== undefined && (
+                    <div className="flex items-center gap-1">
+                      <Eye className="h-4 w-4" />
+                      {post.viewCount} views
+                    </div>
+                  )}
+                </div>
+                
+                {/* Share Buttons */}
+                <ShareButtons post={post} url={currentUrl} />
+              </header>
+              
+              {/* Featured Image */}
+              {post.featuredImage && (
+                <div className="relative aspect-video mb-8 overflow-hidden rounded-lg">
+                  <Image
+                    src={post.featuredImage}
+                    alt={post.title}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                </div>
+              )}
+              
+              {/* Content */}
+              <div className="prose prose-lg max-w-none mb-8">
+                {/* Simple content rendering - in a real app, you'd use a markdown parser */}
+                <div className="whitespace-pre-wrap">
+                  {post.content}
+                </div>
+              </div>
+              
+              <Separator className="my-8" />
+              
+              {/* Tags */}
+              {post.tags && post.tags.length > 0 && (
+                <div className="mb-8">
+                  <h3 className="font-semibold mb-3">Tags</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {post.tags.map((pt: any) => (
+                      <Badge key={pt.tag.id} variant="outline">
+                        <Link href={`/blog?tag=${pt.tag.slug}`}>
+                          #{pt.tag.name}
+                        </Link>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Share Again */}
+              <div className="flex items-center justify-between p-6 bg-muted rounded-lg">
+                <div>
+                  <h3 className="font-semibold mb-1">Enjoyed this article?</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Share it with your network!
+                  </p>
+                </div>
+                <ShareButtons post={post} url={currentUrl} />
+              </div>
+            </article>
+            
+            {/* Related Posts */}
+            <RelatedPosts posts={relatedPosts} />
+            
+            {/* Comments Section */}
+            <div className="mt-16">
+              <h2 className="text-2xl font-bold mb-8">Comments</h2>
+              <CommentList postId={post.id} />
+            </div>
+          </div>
+          
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <TableOfContents content={post.content} />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -359,7 +413,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
           height: 630,
           alt: post.title,
         }] : [],
-        publishedTime: new Date(post.publishedAt ?? post.createdAt).toISOString(),
+        publishedTime: new Date(post.publishedAt ?? post.createdAt ?? new Date()).toISOString(),
         authors: [(post.author as { name?: string })?.name ?? "Anonymous"],
       },
       twitter: {

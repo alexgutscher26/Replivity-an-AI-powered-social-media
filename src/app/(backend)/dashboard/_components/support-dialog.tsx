@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -37,7 +36,7 @@ import {
   Lightbulb,
   Settings
 } from "lucide-react";
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -51,16 +50,59 @@ interface SupportDialogProps {
   onSuccess?: () => void;
   /** Optional priority level for the support request */
   priority?: "low" | "medium" | "high";
+  /** Optional custom title for the dialog */
+  title?: string;
+  /** Optional custom description for the dialog */
+  description?: string;
+  /** Optional flag to disable category selection */
+  disableCategorySelection?: boolean;
 }
 
 const SUPPORT_CATEGORIES = [
-  { id: "bug", label: "Bug Report", icon: Bug, color: "bg-red-100 text-red-800" },
-  { id: "feature", label: "Feature Request", icon: Lightbulb, color: "bg-blue-100 text-blue-800" },
-  { id: "help", label: "General Help", icon: HelpCircle, color: "bg-green-100 text-green-800" },
-  { id: "account", label: "Account Issue", icon: Settings, color: "bg-purple-100 text-purple-800" },
+  { 
+    id: "bug", 
+    label: "Bug Report", 
+    icon: Bug, 
+    color: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300",
+    description: "Report a problem or error"
+  },
+  { 
+    id: "feature", 
+    label: "Feature Request", 
+    icon: Lightbulb, 
+    color: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300",
+    description: "Suggest a new feature or improvement"
+  },
+  { 
+    id: "help", 
+    label: "General Help", 
+    icon: HelpCircle, 
+    color: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300",
+    description: "Get help with using the platform"
+  },
+  { 
+    id: "account", 
+    label: "Account Issue", 
+    icon: Settings, 
+    color: "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300",
+    description: "Issues with your account or billing"
+  },
 ] as const;
 
 type SupportCategory = typeof SUPPORT_CATEGORIES[number]["id"];
+
+// Constants for better maintainability
+const FORM_LIMITS = {
+  SUBJECT_MAX: 100,
+  MESSAGE_MAX: 2000,
+  MESSAGE_MIN: 10,
+} as const;
+
+const TOAST_DURATIONS = {
+  SUCCESS: 5000,
+  ERROR: 7000,
+  WARNING: 4000,
+} as const;
 
 /**
  * Support Dialog Component
@@ -82,9 +124,14 @@ export default function SupportDialog({
   initialValues,
   onSuccess,
   priority = "medium",
+  title = "Contact Support",
+  description = "Need assistance? Send us a detailed message and we'll respond as quickly as possible. Please include any relevant information to help us assist you better.",
+  disableCategorySelection = false,
 }: SupportDialogProps) {
   const [selectedCategory, setSelectedCategory] = useState<SupportCategory | null>(null);
   const [isSubmitAttempted, setIsSubmitAttempted] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
 
   const form = useForm<SupportFormValues>({
     resolver: zodResolver(supportFormSchema),
@@ -92,22 +139,29 @@ export default function SupportDialog({
       subject: initialValues?.subject ?? "",
       message: initialValues?.message ?? "",
     },
-    mode: "onChange", // Enable real-time validation
+    mode: "onChange",
+    shouldFocusError: true,
+    shouldUnregister: false,
   });
 
-  // Enhanced form validation with better UX
+  // Enhanced form validation with better UX and performance optimization
   const formValidation = useMemo(() => {
     const subject = form.watch("subject")?.trim() || "";
     const message = form.watch("message")?.trim() || "";
     
+    const isSubjectValid = subject.length > 0 && subject.length <= FORM_LIMITS.SUBJECT_MAX;
+    const isMessageValid = message.length >= FORM_LIMITS.MESSAGE_MIN && message.length <= FORM_LIMITS.MESSAGE_MAX;
+    
     return {
-      isSubjectValid: subject.length > 0,
-      isMessageValid: message.length >= 10,
+      isSubjectValid,
+      isMessageValid,
       subjectLength: subject.length,
       messageLength: message.length,
-      isFormValid: subject.length > 0 && message.length >= 10,
+      isFormValid: isSubjectValid && isMessageValid,
+      subjectProgress: (subject.length / FORM_LIMITS.SUBJECT_MAX) * 100,
+      messageProgress: (message.length / FORM_LIMITS.MESSAGE_MAX) * 100,
     };
-  }, [form.watch("subject"), form.watch("message")]);
+  }, [form]);
 
   // Reset form when dialog opens/closes or initial values change
   useEffect(() => {
@@ -118,84 +172,134 @@ export default function SupportDialog({
       });
       setSelectedCategory(null);
       setIsSubmitAttempted(false);
+      setIsDirty(false);
     }
   }, [open, initialValues, form]);
 
+  // Track form dirty state for better UX
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name && (value.subject || value.message)) {
+        setIsDirty(true);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
+  // Auto-focus submit button when form becomes valid
+  useEffect(() => {
+    if (formValidation.isFormValid && isSubmitAttempted && submitButtonRef.current) {
+      submitButtonRef.current.focus();
+    }
+  }, [formValidation.isFormValid, isSubmitAttempted]);
+
   const handleSuccess = useCallback(() => {
+    const categoryLabel = selectedCategory 
+      ? SUPPORT_CATEGORIES.find(c => c.id === selectedCategory)?.label 
+      : "General";
+    
     toast.success("Support request sent successfully", {
-      description: "We'll get back to you as soon as possible.",
-      duration: 5000,
+      description: `Your ${categoryLabel} request has been submitted. We'll get back to you as soon as possible.`,
+      duration: TOAST_DURATIONS.SUCCESS,
       icon: <CheckCircle2 className="h-4 w-4" />,
     });
 
     form.reset();
     setSelectedCategory(null);
     setIsSubmitAttempted(false);
+    setIsDirty(false);
     onOpenChange?.(false);
     onSuccess?.();
-  }, [form, onOpenChange, onSuccess]);
-
-  const handleError = useCallback((error: unknown) => {
-    console.error("Support request failed:", error);
-    
-    const errorMessage = error instanceof Error 
-      ? error.message 
-      : "An unexpected error occurred";
-    
-    toast.error("Failed to send support request", {
-      description: errorMessage,
-      duration: 7000,
-      icon: <AlertCircle className="h-4 w-4" />,
-      action: {
-        label: "Try again",
-        onClick: () => {
-          const formData = form.getValues();
-          if (formData.subject && formData.message) {
-            mail.mutate({
-              subject: formData.subject.trim(),
-              message: formData.message.trim(),
-              category: selectedCategory,
-            });
-          }
-        },
-      },
-    });
-  }, [form, selectedCategory]);
+  }, [form, onOpenChange, onSuccess, selectedCategory]);
 
   const mail = api.settings.sendSupportMail.useMutation({
     onSuccess: handleSuccess,
-    onError: handleError,
+    onError: (error: unknown) => {
+      console.error("Support request failed:", error);
+      
+      let errorMessage = "An unexpected error occurred";
+      let errorCode = "UNKNOWN_ERROR";
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        // Extract error code if available (e.g., from tRPC errors)
+        if ('code' in error) {
+          errorCode = String(error.code);
+        }
+      }
+      
+      toast.error("Failed to send support request", {
+        description: `${errorMessage} ${errorCode !== "UNKNOWN_ERROR" ? `(Code: ${errorCode})` : ""}`,
+        duration: TOAST_DURATIONS.ERROR,
+        icon: <AlertCircle className="h-4 w-4" />,
+        action: {
+          label: "Retry",
+          onClick: () => {
+            const formData = form.getValues();
+            if (formData.subject?.trim() && formData.message?.trim()) {
+              mail.mutate({
+                subject: formData.subject.trim(),
+                message: formData.message.trim(),
+                category: selectedCategory,
+              });
+            }
+          },
+        },
+      });
+    },
   });
 
   const onSubmit = useCallback(async (formData: SupportFormValues) => {
     setIsSubmitAttempted(true);
     
-    // Additional client-side validation with better error messages
-    if (!formData.subject.trim()) {
+    // Enhanced client-side validation with better error messages
+    const trimmedSubject = formData.subject.trim();
+    const trimmedMessage = formData.message.trim();
+    
+    if (!trimmedSubject) {
       form.setError("subject", { 
-        message: "Subject is required and cannot be empty" 
+        message: "Subject is required and cannot be empty",
+        type: "required"
       });
       return;
     }
     
-    if (!formData.message.trim()) {
+    if (trimmedSubject.length > FORM_LIMITS.SUBJECT_MAX) {
+      form.setError("subject", { 
+        message: `Subject must be ${FORM_LIMITS.SUBJECT_MAX} characters or less`,
+        type: "maxLength"
+      });
+      return;
+    }
+    
+    if (!trimmedMessage) {
       form.setError("message", { 
-        message: "Message is required and cannot be empty" 
+        message: "Message is required and cannot be empty",
+        type: "required"
       });
       return;
     }
 
-    if (formData.message.trim().length < 10) {
+    if (trimmedMessage.length < FORM_LIMITS.MESSAGE_MIN) {
       form.setError("message", { 
-        message: "Please provide more details (at least 10 characters)" 
+        message: `Please provide more details (at least ${FORM_LIMITS.MESSAGE_MIN} characters)`,
+        type: "minLength"
+      });
+      return;
+    }
+    
+    if (trimmedMessage.length > FORM_LIMITS.MESSAGE_MAX) {
+      form.setError("message", { 
+        message: `Message must be ${FORM_LIMITS.MESSAGE_MAX} characters or less`,
+        type: "maxLength"
       });
       return;
     }
 
-    // Enhanced mutation with additional context
+    // Enhanced mutation with additional context and metadata
     mail.mutate({
-      subject: formData.subject.trim(),
-      message: formData.message.trim(),
+      subject: trimmedSubject,
+      message: trimmedMessage,
       category: selectedCategory,
     });
   }, [form, mail, selectedCategory]);
@@ -204,39 +308,61 @@ export default function SupportDialog({
     if (mail.isPending) {
       toast.warning("Please wait for the request to complete", {
         description: "Your support request is being sent...",
+        duration: TOAST_DURATIONS.WARNING,
       });
       return;
     }
+    
+    // Warn user about unsaved changes
+    if (isDirty && (form.getValues().subject?.trim() || form.getValues().message?.trim())) {
+      const shouldClose = window.confirm(
+        "You have unsaved changes. Are you sure you want to close this dialog?"
+      );
+      if (!shouldClose) return;
+    }
+    
     onOpenChange?.(false);
-  }, [mail.isPending, onOpenChange]);
+  }, [mail.isPending, onOpenChange, isDirty, form]);
 
   const handleCategorySelect = useCallback((category: SupportCategory) => {
-    setSelectedCategory(category);
+    setSelectedCategory(prev => prev === category ? null : category);
     
-    // Auto-populate subject prefix based on category
-    const currentSubject = form.getValues("subject");
-    if (!currentSubject) {
-      const categoryLabel = SUPPORT_CATEGORIES.find(c => c.id === category)?.label;
-      form.setValue("subject", `${categoryLabel}: `);
+    // Auto-populate subject prefix based on category (only if subject is empty)
+    const currentSubject = form.getValues("subject")?.trim();
+    if (!currentSubject && category) {
+      const categoryData = SUPPORT_CATEGORIES.find(c => c.id === category);
+      if (categoryData) {
+        form.setValue("subject", `${categoryData.label}: `, { shouldDirty: true });
+        form.setFocus("subject");
+      }
     }
   }, [form]);
 
   /**
-   * Determines the color class based on the current character count relative to specified max and min values.
-   *
-   * The function checks if the current count is below an optional minimum threshold, returning 'text-red-500' if true.
-   * If the current count exceeds 90% of the maximum threshold, it returns 'text-yellow-600'.
-   * Otherwise, it defaults to 'text-muted-foreground'.
-   *
-   * @param {number} current - The current character count.
-   * @param {number} max - The maximum allowable character count.
-   * @param {number} [min] - An optional minimum threshold for the character count.
+   * Determines the color class and status based on character count validation
+   * @param current - The current character count
+   * @param max - The maximum allowable character count
+   * @param min - An optional minimum threshold for the character count
+   * @returns Object with color class and validation status
    */
-  const getCharacterCountColor = (current: number, max: number, min?: number) => {
-    if (min && current < min) return "text-red-500";
-    if (current > max * 0.9) return "text-yellow-600";
-    return "text-muted-foreground";
-  };
+  const getCharacterCountStatus = useCallback((current: number, max: number, min?: number) => {
+    const isOverLimit = current > max;
+    const isUnderMin = min ? current < min : false;
+    const isNearLimit = current > max * 0.9;
+    
+    let colorClass = "text-muted-foreground";
+    let status: "valid" | "warning" | "error" = "valid";
+    
+    if (isOverLimit || isUnderMin) {
+      colorClass = "text-red-500";
+      status = "error";
+    } else if (isNearLimit) {
+      colorClass = "text-yellow-600";
+      status = "warning";
+    }
+    
+    return { colorClass, status, isOverLimit, isUnderMin, isNearLimit };
+  }, []);
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -246,12 +372,11 @@ export default function SupportDialog({
       >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <HelpCircle className="h-5 w-5" />
-            Contact Support
+            <HelpCircle className="h-5 w-5" aria-hidden="true" />
+            {title}
           </DialogTitle>
           <DialogDescription id="support-dialog-description">
-            Need assistance? Send us a detailed message and we&apos;ll respond as quickly as possible.
-            Please include any relevant information to help us assist you better.
+            {description}
           </DialogDescription>
         </DialogHeader>
         
@@ -262,30 +387,53 @@ export default function SupportDialog({
             noValidate
           >
             {/* Category Selection */}
-            <div className="space-y-3">
-              <label className="text-sm font-medium">
-                Category <span className="text-muted-foreground">(optional)</span>
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {SUPPORT_CATEGORIES.map((category) => {
-                  const Icon = category.icon;
-                  return (
-                    <Badge
-                      key={category.id}
-                      variant={selectedCategory === category.id ? "default" : "outline"}
-                      className={cn(
-                        "cursor-pointer transition-all hover:scale-105",
-                        selectedCategory === category.id && category.color
-                      )}
-                      onClick={() => handleCategorySelect(category.id)}
-                    >
-                      <Icon className="h-3 w-3 mr-1" />
-                      {category.label}
-                    </Badge>
-                  );
-                })}
+            {!disableCategorySelection && (
+              <div className="space-y-3">
+                <label className="text-sm font-medium" id="category-label">
+                  Category <span className="text-muted-foreground">(optional)</span>
+                </label>
+                <div className="flex flex-wrap gap-2" role="group" aria-labelledby="category-label">
+                  {SUPPORT_CATEGORIES.map((category) => {
+                    const Icon = category.icon;
+                    const isSelected = selectedCategory === category.id;
+                    return (
+                      <Badge
+                        key={category.id}
+                        variant={isSelected ? "default" : "outline"}
+                        className={cn(
+                          "cursor-pointer transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                          isSelected && category.color,
+                          "select-none"
+                        )}
+                        onClick={() => handleCategorySelect(category.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            handleCategorySelect(category.id);
+                          }
+                        }}
+                        tabIndex={0}
+                        role="button"
+                        aria-pressed={isSelected}
+                        aria-describedby={`category-${category.id}-description`}
+                        title={category.description}
+                      >
+                        <Icon className="h-3 w-3 mr-1" aria-hidden="true" />
+                        {category.label}
+                        <span id={`category-${category.id}-description`} className="sr-only">
+                          {category.description}
+                        </span>
+                      </Badge>
+                    );
+                  })}
+                </div>
+                {selectedCategory && (
+                  <p className="text-xs text-muted-foreground">
+                    Selected: {SUPPORT_CATEGORIES.find(c => c.id === selectedCategory)?.description}
+                  </p>
+                )}
               </div>
-            </div>
+            )}
 
             <FormField
               control={form.control}
@@ -299,30 +447,37 @@ export default function SupportDialog({
                     <Input
                       placeholder="Brief description of your issue (e.g., Login problem, Feature request)"
                       disabled={mail.isPending}
-                      maxLength={100}
-                      aria-describedby="subject-description"
+                      maxLength={FORM_LIMITS.SUBJECT_MAX}
+                      aria-describedby="subject-description subject-validation"
                       className={cn(
-                        isSubmitAttempted && !formValidation.isSubjectValid && "border-red-500"
+                        isSubmitAttempted && !formValidation.isSubjectValid && "border-red-500",
+                        formValidation.subjectLength > FORM_LIMITS.SUBJECT_MAX && "border-red-500"
                       )}
+                      autoComplete="off"
                       {...field}
                     />
                   </FormControl>
                   <div 
                     id="subject-description" 
                     className={cn(
-                      "text-xs flex justify-between",
-                      getCharacterCountColor(formValidation.subjectLength, 100)
+                      "text-xs flex justify-between items-center",
+                      getCharacterCountStatus(formValidation.subjectLength, FORM_LIMITS.SUBJECT_MAX).colorClass
                     )}
                   >
-                    <span>
+                    <span className="flex items-center gap-1" id="subject-validation">
                       {formValidation.isSubjectValid ? (
-                        <CheckCircle2 className="h-3 w-3 text-green-500 inline mr-1" />
+                        <CheckCircle2 className="h-3 w-3 text-green-500" aria-hidden="true" />
                       ) : (
-                        isSubmitAttempted && <AlertCircle className="h-3 w-3 text-red-500 inline mr-1" />
+                        isSubmitAttempted && <AlertCircle className="h-3 w-3 text-red-500" aria-hidden="true" />
                       )}
+                      <span className="sr-only">
+                        {formValidation.isSubjectValid ? "Subject is valid" : "Subject is required"}
+                      </span>
                       Subject is {formValidation.isSubjectValid ? "valid" : "required"}
                     </span>
-                    <span>{formValidation.subjectLength}/100 characters</span>
+                    <span aria-live="polite">
+                      {formValidation.subjectLength}/{FORM_LIMITS.SUBJECT_MAX} characters
+                    </span>
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -341,46 +496,64 @@ export default function SupportDialog({
                     <Textarea
                       placeholder="Please describe your issue in detail. Include any error messages, steps to reproduce the problem, or specific questions you have."
                       className={cn(
-                        "min-h-[140px] resize-none",
-                        isSubmitAttempted && !formValidation.isMessageValid && "border-red-500"
+                        "min-h-[140px] resize-y",
+                        isSubmitAttempted && !formValidation.isMessageValid && "border-red-500",
+                        formValidation.messageLength > FORM_LIMITS.MESSAGE_MAX && "border-red-500"
                       )}
                       disabled={mail.isPending}
-                      maxLength={2000}
-                      aria-describedby="message-description"
+                      maxLength={FORM_LIMITS.MESSAGE_MAX}
+                      aria-describedby="message-description message-validation"
+                      rows={6}
                       {...field}
                     />
                   </FormControl>
                   <div 
                     id="message-description" 
                     className={cn(
-                      "text-xs flex justify-between",
-                      getCharacterCountColor(formValidation.messageLength, 2000, 10)
+                      "text-xs flex justify-between items-center",
+                      getCharacterCountStatus(formValidation.messageLength, FORM_LIMITS.MESSAGE_MAX, FORM_LIMITS.MESSAGE_MIN).colorClass
                     )}
                   >
-                    <span>
+                    <span className="flex items-center gap-1" id="message-validation">
                       {formValidation.isMessageValid ? (
-                        <CheckCircle2 className="h-3 w-3 text-green-500 inline mr-1" />
+                        <CheckCircle2 className="h-3 w-3 text-green-500" aria-hidden="true" />
                       ) : (
-                        isSubmitAttempted && <AlertCircle className="h-3 w-3 text-red-500 inline mr-1" />
+                        isSubmitAttempted && <AlertCircle className="h-3 w-3 text-red-500" aria-hidden="true" />
                       )}
-                      Message needs at least 10 characters
+                      <span className="sr-only">
+                        {formValidation.isMessageValid 
+                          ? "Message meets requirements" 
+                          : `Message needs at least ${FORM_LIMITS.MESSAGE_MIN} characters`
+                        }
+                      </span>
+                      Message needs at least {FORM_LIMITS.MESSAGE_MIN} characters
                     </span>
-                    <span>{formValidation.messageLength}/2000 characters</span>
+                    <span aria-live="polite">
+                      {formValidation.messageLength}/{FORM_LIMITS.MESSAGE_MAX} characters
+                    </span>
                   </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
             
-            {/* Priority indicator */}
-            <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
-              <AlertCircle className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
-                Priority: 
-                <Badge variant="outline" className="ml-2 capitalize">
-                  {priority}
-                </Badge>
-              </span>
+            {/* Priority and status indicator */}
+            <div className="flex items-center justify-between gap-2 p-3 bg-muted/50 rounded-lg">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                <span className="text-sm text-muted-foreground">
+                  Priority: 
+                  <Badge variant="outline" className="ml-2 capitalize">
+                    {priority}
+                  </Badge>
+                </span>
+              </div>
+              {formValidation.isFormValid && (
+                <div className="flex items-center gap-1 text-green-600">
+                  <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
+                  <span className="text-xs">Ready to send</span>
+                </div>
+              )}
             </div>
             
             <DialogFooter className="flex-col sm:flex-row gap-2">
@@ -394,25 +567,33 @@ export default function SupportDialog({
                 Cancel
               </Button>
               <Button
+                ref={submitButtonRef}
                 type="submit"
                 disabled={
-                  mail.isPending || 
-                  form.formState.isSubmitting ||
+                  mail.isPending ?? 
+                  form.formState.isSubmitting ??
                   !formValidation.isFormValid
                 }
                 className="w-full sm:w-auto"
+                aria-describedby="submit-button-description"
               >
                 {mail.isPending || form.formState.isSubmitting ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
                     Sending...
                   </>
                 ) : (
                   <>
-                    <Send className="mr-2 h-4 w-4" />
+                    <Send className="mr-2 h-4 w-4" aria-hidden="true" />
                     Send Support Request
                   </>
                 )}
+                <span id="submit-button-description" className="sr-only">
+                  {formValidation.isFormValid 
+                    ? "Submit your support request" 
+                    : "Complete the form to enable submission"
+                  }
+                </span>
               </Button>
             </DialogFooter>
           </form>

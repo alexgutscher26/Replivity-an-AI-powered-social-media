@@ -15,6 +15,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { Suspense } from "react";
+import { type Metadata } from "next";
 
 // Force this page to be dynamic since it uses TRPC calls that require headers
 export const dynamic = 'force-dynamic';
@@ -67,7 +68,7 @@ function BlogPostCard({ post }: { post: any }) {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
-                {formatDistanceToNow(new Date(post.publishedAt ?? post.createdAt), { addSuffix: true })}
+                {formatDistanceToNow(new Date(post.publishedAt ?? post.createdAt ?? new Date()), { addSuffix: true })}
               </div>
               <div className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
@@ -181,7 +182,7 @@ function FeaturedPost({ post }: { post: any }) {
             <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
-                {formatDistanceToNow(new Date(post.publishedAt ?? post.createdAt), { addSuffix: true })}
+                {formatDistanceToNow(new Date(post.publishedAt ?? post.createdAt ?? new Date()), { addSuffix: true })}
               </div>
               <div className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
@@ -272,74 +273,157 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   
   const totalPages = Math.ceil(postsData.totalCount / limit);
   
+  // Generate structured data for SEO
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "Replivity Blog",
+    "description": "Discover insights, tips, and stories about AI social media management and automation.",
+    "url": `${baseUrl}/blog`,
+    "publisher": {
+      "@type": "Organization",
+      "name": "Replivity",
+      "url": baseUrl,
+    },
+    "blogPost": postsData.posts.slice(0, 10).map(post => ({
+      "@type": "BlogPosting",
+      "headline": post.title,
+      "description": post.excerpt,
+      "url": `${baseUrl}/blog/${post.slug}`,
+      "datePublished": post.publishedAt?.toISOString(),
+      "author": {
+        "@type": "Organization",
+        "name": "Replivity Team",
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Replivity",
+      },
+      "image": post.featuredImage ? `${baseUrl}${post.featuredImage}` : `${baseUrl}/og-image.svg`,
+      "wordCount": post.readingTime ? post.readingTime * 200 : undefined,
+    })),
+  };
+  
   return (
-    <div className="container mx-auto px-4 py-12">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">Our Blog</h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Discover insights, tips, and stories from our team. Stay updated with the latest trends and best practices.
-        </p>
-      </div>
+    <>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
       
-      {/* Featured Post */}
-      {page === 1 && featuredPost && (
-        <FeaturedPost post={featuredPost} />
-      )}
-      
-      {/* Filters */}
-      <Suspense fallback={<div>Loading filters...</div>}>
-        <BlogFilters 
-          categories={categories} 
-          tags={tags} 
-          searchParams={params}
-        />
-      </Suspense>
-      
-      {/* Posts Grid */}
-      {postsData.posts.length === 0 ? (
-        <div className="text-center py-12">
-          <h3 className="text-xl font-semibold mb-2">No posts found</h3>
-          <p className="text-muted-foreground">
-            Try adjusting your search criteria or check back later for new content.
+      <div className="container mx-auto px-4 py-12">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-4">Our Blog</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Discover insights, tips, and stories from our team. Stay updated with the latest trends and best practices.
           </p>
         </div>
-      ) : (
-        <>
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {postsData.posts.map((post) => (
-              <BlogPostCard key={post.id} post={post} />
-            ))}
-          </div>
-          
-          <Pagination 
-            currentPage={page}
-            totalPages={totalPages}
-            hasMore={postsData.hasMore}
+        
+        {/* Featured Post */}
+        {page === 1 && featuredPost && (
+          <FeaturedPost post={featuredPost} />
+        )}
+        
+        {/* Filters */}
+        <Suspense fallback={<div>Loading filters...</div>}>
+          <BlogFilters 
+            categories={categories} 
+            tags={tags} 
+            searchParams={params}
           />
-        </>
-      )}
-    </div>
+        </Suspense>
+        
+        {/* Posts Grid */}
+        {postsData.posts.length === 0 ? (
+          <div className="text-center py-12">
+            <h3 className="text-xl font-semibold mb-2">No posts found</h3>
+            <p className="text-muted-foreground">
+              Try adjusting your search criteria or check back later for new content.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {postsData.posts.map((post) => (
+                <BlogPostCard key={post.id} post={post} />
+              ))}
+            </div>
+            
+            <Pagination 
+              currentPage={page}
+              totalPages={totalPages}
+              hasMore={postsData.hasMore}
+            />
+          </>
+        )}
+      </div>
+    </>
   );
 }
 
-export async function generateMetadata({ searchParams }: BlogPageProps) {
+export async function generateMetadata({ searchParams }: BlogPageProps): Promise<Metadata> {
   // Unwrap searchParams Promise
   const params = await searchParams;
   
-  const title = params.search 
-    ? `Blog - Search: ${params.search}`
-    : "Blog - Latest Posts and Insights";
-    
-  const description = "Discover insights, tips, and stories from our team. Stay updated with the latest trends and best practices.";
+  let title = "Blog - Latest Posts and Insights";
+  let description = "Discover insights, tips, and stories from our team. Stay updated with the latest trends and best practices in AI social media management.";
+  
+  // Dynamic titles based on search parameters
+  if (params.search) {
+    title = `Blog - Search: ${params.search}`;
+    description = `Search results for "${params.search}" in our blog. Find relevant articles about AI social media management and automation.`;
+  } else if (params.category) {
+    title = `Blog - ${params.category.charAt(0).toUpperCase() + params.category.slice(1)} Category`;
+    description = `Browse all blog posts in the ${params.category} category. Expert insights on AI social media management.`;
+  } else if (params.tag) {
+    title = `Blog - #${params.tag} Tag`;
+    description = `All blog posts tagged with #${params.tag}. Learn about AI social media automation and best practices.`;
+  }
+  
+  const url = `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/blog`;
   
   return {
     title,
     description,
+    keywords: "AI social media, blog, automation, social media management, AI responses, content generation",
+    authors: [{ name: "Replivity Team" }],
     openGraph: {
       title,
       description,
       type: "website",
+      url,
+      siteName: "Replivity",
+      images: [{
+        url: `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/og-image.svg`,
+        width: 1200,
+        height: 630,
+        alt: "Replivity Blog",
+      }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [`${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/twitter-image.svg`],
+    },
+    alternates: {
+      canonical: url,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
   };
 }

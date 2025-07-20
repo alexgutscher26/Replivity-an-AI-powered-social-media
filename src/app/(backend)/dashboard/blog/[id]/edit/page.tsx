@@ -304,7 +304,7 @@ export default function EditBlogPost({ params }: EditBlogPostProps) {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Edit Post</h1>
             <p className="text-muted-foreground">
-              Last updated {formatDistanceToNow(new Date(post.updatedAt ?? post.createdAt), { addSuffix: true })}
+              Last updated {formatDistanceToNow(new Date(post.updatedAt ?? post.createdAt ?? new Date()), { addSuffix: true })}
             </p>
           </div>
         </div>
@@ -367,7 +367,7 @@ export default function EditBlogPost({ params }: EditBlogPostProps) {
               </Select>
               {post.publishedAt && (
                 <p className="text-sm text-muted-foreground mt-2">
-                  Published {formatDistanceToNow(new Date(post.publishedAt), { addSuffix: true })}
+                  Published {formatDistanceToNow(new Date(post.publishedAt ?? new Date()), { addSuffix: true })}
                 </p>
               )}
             </CardContent>

@@ -117,7 +117,7 @@ export function ActiveSessionUserCardSettingsForm() {
                       {`${new UAParser(s.userAgent ?? "").getBrowser().name} on ${new UAParser(s.userAgent ?? "").getDevice().model}`}
                     </FormLabel>
                     <FormDescription>
-                      {`Last active ${formatDistance(new Date(s.updatedAt ?? new Date()), new Date())} ago, expires in ${formatDistance(new Date(s.expiresAt ?? new Date()), new Date())}.`}
+                      {`Last active ${formatDistance(new Date(s.updatedAt ?? Date.now()), new Date())} ago, expires in ${formatDistance(new Date(s.expiresAt ?? Date.now()), new Date())}.`}
                     </FormDescription>
                   </div>
                   <FormControl>
