@@ -92,6 +92,9 @@ export const viewport: Viewport = {
 };
 
 // Root layout component with enhanced accessibility and performance
+/**
+ * Defines the root layout for the application, including HTML structure and provider wrappers.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
