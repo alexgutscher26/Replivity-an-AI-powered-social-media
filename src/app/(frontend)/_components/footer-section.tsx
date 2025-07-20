@@ -21,6 +21,14 @@ const footerSections = {
   ],
 };
 
+/**
+ * Renders the footer section of the application.
+ *
+ * This function fetches site settings using an API query and conditionally renders different UI components based on the loading state, error state, or success state.
+ * In case of loading, it displays a spinner. If there is an error, it shows the error message. Otherwise, it renders the footer with company information and navigation links.
+ *
+ * @returns The JSX element representing the footer section.
+ */
 export default function FooterSection() {
   const {
     data: settings,

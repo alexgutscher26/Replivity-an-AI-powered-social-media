@@ -7,6 +7,9 @@ import React from 'react';
 import { api } from "@/trpc/react";
 import { Chrome, Flame } from "lucide-react";
 
+/**
+ * Renders an SVG arrow pointing upwards.
+ */
 const ArrowTop = ({ className }: { className?: string }) => (
   <svg
     width="65"
@@ -33,6 +36,9 @@ const ArrowTop = ({ className }: { className?: string }) => (
   </svg>
 );
 
+/**
+ * Renders an SVG arrow pointing left with optional custom styling.
+ */
 const ArrowLeft = ({ className }: { className?: string }) => (
   <svg
     width="50"
@@ -59,6 +65,9 @@ const ArrowLeft = ({ className }: { className?: string }) => (
   </svg>
 );
 
+/**
+ * Renders an arrow pointing to the right as an SVG element.
+ */
 const ArrowRight = ({ className }: { className?: string }) => (
   <svg
     width="66"
@@ -85,6 +94,9 @@ const ArrowRight = ({ className }: { className?: string }) => (
   </svg>
 );
 
+/**
+ * Renders a floating annotation with optional styling and children content.
+ */
 const FloatingAnnotation = ({
   children,
   className,
@@ -108,6 +120,14 @@ const FloatingAnnotation = ({
   </div>
 );
 
+/**
+ * Renders a Hero component showcasing AI-powered social media extension features.
+ *
+ * This component fetches settings and download information using suspense queries.
+ * It displays a visually appealing section with annotations, headings, paragraphs,
+ * and buttons for downloading the extension on Chrome and Firefox. The styles include
+ * radial gradients, animations, and responsive design elements.
+ */
 const Hero = () => {
   const [settings] = api.settings.site.useSuspenseQuery();
   const [download] = api.settings.downloadExtension.useSuspenseQuery();

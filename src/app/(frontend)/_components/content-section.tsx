@@ -3,6 +3,9 @@
 import { api } from "@/trpc/react";
 import Image from "next/image";
 
+/**
+ * Renders a content section with social media engagement information.
+ */
 export default function ContentSection() {
   const [settings] = api.settings.site.useSuspenseQuery();
 

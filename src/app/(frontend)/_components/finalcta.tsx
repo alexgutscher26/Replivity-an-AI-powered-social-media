@@ -2,6 +2,9 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
+/**
+ * Renders a final call-to-action section encouraging users to transform their social media experience.
+ */
 const FinalCTA = () => {
   return (
     <section className="py-24 sm:py-32 bg-black">
