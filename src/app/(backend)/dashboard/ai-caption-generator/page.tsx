@@ -59,6 +59,9 @@ const captionGeneratorStructuredData = {
   }
 };
 
+/**
+ * Renders the AI Caption Generator page with a form for generating captions.
+ */
 export default function AiCaptionGeneratorPage() {
   return (
     <>
