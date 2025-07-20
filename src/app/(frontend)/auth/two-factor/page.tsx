@@ -26,22 +26,46 @@ const TOTP_CODE_LENGTH = 6;
 const BACKUP_CODE_MAX_LENGTH = 10;
 
 // Validation functions
+/**
+ * Validates if the provided TOTP code is a six-digit number.
+ */
 const validateTotpCode = (code: string): boolean => {
   return /^\d{6}$/.test(code);
 };
 
+/**
+ * Validates if the provided backup code is between 8 and 10 alphanumeric characters long.
+ */
 const validateBackupCode = (code: string): boolean => {
   return /^[a-zA-Z0-9]{8,10}$/.test(code);
 };
 
+/**
+ * Sanitizes TOTP input by removing non-digit characters and limiting length.
+ */
 const sanitizeTotpInput = (input: string): string => {
   return input.replace(/\D/g, '').slice(0, TOTP_CODE_LENGTH);
 };
 
+/**
+ * Sanitizes backup input by removing non-alphanumeric characters and converting to lowercase.
+ */
 const sanitizeBackupInput = (input: string): string => {
   return input.replace(/[^a-zA-Z0-9]/g, '').toLowerCase().slice(0, BACKUP_CODE_MAX_LENGTH);
 };
 
+/**
+ * TwoFactorPage component for handling two-factor authentication verification.
+ *
+ * This component manages the state of the verification process, including the input code,
+ * loading status, and error messages. It supports both TOTP (Time-based One-Time Password)
+ * and backup code verification methods. The component uses hooks like `useState` and
+ * `useMemo` for efficient state management and memoization. Event handlers handle user
+ * interactions such as input changes and method toggles. The form submission is validated,
+ * and appropriate API calls are made based on the selected verification method.
+ *
+ * @returns A React functional component rendering the two-factor authentication page.
+ */
 export default function TwoFactorPage() {
   const [state, setState] = useState<VerificationState>({
     code: "",
