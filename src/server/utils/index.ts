@@ -37,6 +37,17 @@ export const isFirstUser = cache(async (): Promise<boolean> => {
   return users.length === 0;
 });
 
+/**
+ * Retrieves an AI instance based on the provided configuration.
+ *
+ * It selects a model from the enabled models and initializes the corresponding AI provider instance.
+ * If no valid model is found or if an unknown provider is specified, it throws an error.
+ *
+ * @param apiKey - The API key for accessing the AI services.
+ * @param enabledModels - An array of model keys that are enabled for use.
+ * @returns An object containing the initialized AI instance and the selected model.
+ * @throws Error If no AI model is selected or if the provider is unknown.
+ */
 export const getAIInstance = async ({
   apiKey,
   enabledModels,
