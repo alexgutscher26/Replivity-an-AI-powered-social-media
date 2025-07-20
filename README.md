@@ -144,37 +144,6 @@ cd web-v6.0.0
 npm install
 ```
 
-#### 2️⃣ **Environment Configuration**
-Create a `.env.local` file in the root directory:
-
-```env
-# 🗄️ Database Configuration
-DATABASE_URL="postgresql://username:password@localhost:5432/replier_db"
-
-# 🤖 AI Provider Keys (at least one required)
-OPENAI_API_KEY="sk-..."
-GOOGLE_AI_API_KEY="..."
-MISTRAL_API_KEY="..."
-ANTHROPIC_API_KEY="..."
-
-# 🔐 Authentication
-BETTER_AUTH_SECRET="your-secret-key-here"
-BETTER_AUTH_URL="http://localhost:3000"
-
-# 💳 Payment Providers
-STRIPE_SECRET_KEY="sk_test_..."
-STRIPE_PUBLISHABLE_KEY="pk_test_..."
-PAYPAL_CLIENT_ID="..."
-PAYPAL_CLIENT_SECRET="..."
-
-# 📧 Email Service
-RESEND_API_KEY="re_..."
-
-# 📁 File Storage
-UPLOADTHING_SECRET="sk_live_..."
-UPLOADTHING_APP_ID="..."
-```
-
 #### 3️⃣ **Database Setup**
 ```bash
 # Generate database schema
@@ -302,88 +271,6 @@ npm run dev:opera
 | `npm run compile` | TypeScript compilation check | Development |
 | `npm run lint` | Run ESLint analysis | Code Quality |
 | `npm run lint:fix` | Auto-fix ESLint issues | Code Quality |
-
-## 🏗️ Project Structure
-
-<details>
-<summary><strong>📁 Complete Project Architecture</strong></summary>
-
-```
-📦 AI Social Media Replier (v6.0.0)
-├── 🌐 src/                           # Web Platform Source
-│   ├── 📱 app/                       # Next.js App Router
-│   │   ├── 🏠 (frontend)/           # Public Pages
-│   │   │   ├── page.tsx             # Landing page
-│   │   │   ├── pricing/             # Pricing page
-│   │   │   ├── features/            # Features showcase
-│   │   │   └── auth/                # Authentication pages
-│   │   ├── 🔒 (backend)/            # Protected Dashboard
-│   │   │   ├── dashboard/           # Main dashboard
-│   │   │   ├── tools/               # AI tools (hashtags, captions)
-│   │   │   ├── analytics/           # Usage analytics
-│   │   │   ├── settings/            # User settings
-│   │   │   └── admin/               # Admin panel
-│   │   ├── 🔌 api/                  # API Routes
-│   │   │   ├── auth/                # Authentication endpoints
-│   │   │   ├── webhooks/            # Payment webhooks
-│   │   │   └── trpc/                # tRPC API handler
-│   │   ├── 🧩 _components/          # Shared app components
-│   │   └── 📄 layout.tsx            # Root layout
-│   ├── 🎨 components/               # Reusable UI Components
-│   │   ├── 🔐 auth/                 # Authentication components
-│   │   └── 🎯 ui/                   # Base UI components (Radix)
-│   ├── 🖥️ server/                   # Server-side Logic
-│   │   ├── 🔌 api/                  # tRPC Routers
-│   │   │   ├── auth.ts              # Authentication router
-│   │   │   ├── ai.ts                # AI generation router
-│   │   │   ├── analytics.ts         # Analytics router
-│   │   │   └── admin.ts             # Admin router
-│   │   ├── 🔐 auth/                 # Authentication Config
-│   │   ├── 🗄️ db/                   # Database Layer
-│   │   │   ├── schema.ts            # Drizzle schema
-│   │   │   └── index.ts             # Database connection
-│   │   ├── 🛠️ services/             # Business Logic
-│   │   └── 🔧 utils/                # Server utilities
-│   ├── 🔄 trpc/                     # tRPC Client Setup
-│   ├── 🎨 styles/                   # Global Styles
-│   ├── 🔧 utils/                    # Client Utilities
-│   ├── 🏷️ types/                    # TypeScript Types
-│   └── 🪝 hooks/                    # Custom React Hooks
-├── 🔌 extension-v6.0.0/             # Browser Extension
-│   ├── 📦 src/                      # Extension Source
-│   │   ├── 🚪 entrypoints/          # Extension entry points
-│   │   │   ├── background.ts        # Background script
-│   │   │   ├── content.ts           # Content script
-│   │   │   ├── popup/               # Extension popup
-│   │   │   └── options/             # Options page
-│   │   ├── 🧩 components/           # Extension components
-│   │   ├── 🔐 auth/                 # Extension auth
-│   │   ├── 🪝 hooks/                # Extension hooks
-│   │   ├── 🔧 lib/                  # Extension utilities
-│   │   ├── 🌍 locales/              # Internationalization
-│   │   ├── 📋 schemas/              # Validation schemas
-│   │   └── 🎨 assets/               # Extension assets
-│   ├── 📄 wxt.config.ts             # WXT configuration
-│   └── 📦 package.json              # Extension dependencies
-├── 🗄️ drizzle/                      # Database Migrations
-│   ├── 📝 *.sql                     # Migration files
-│   └── 📊 meta/                     # Migration metadata
-├── 📚 docs/                         # Documentation
-├── 🔧 scripts/                      # Utility Scripts
-├── 🌍 public/                       # Static Assets
-├── ⚙️ Configuration Files
-│   ├── 📄 next.config.js            # Next.js config
-│   ├── 📄 tailwind.config.js        # Tailwind config
-│   ├── 📄 drizzle.config.ts         # Database config
-│   ├── 📄 tsconfig.json             # TypeScript config
-│   └── 📄 package.json              # Dependencies
-└── 📋 Documentation
-    ├── 📖 README.md                 # This file
-    ├── 📝 TODO.md                   # Development roadmap
-    └── 🔧 DATABASE_OPTIMIZATION.md  # DB optimization guide
-```
-
-</details>
 
 ### 🎯 Key Directories Explained
 
@@ -539,38 +426,6 @@ npm run dev:opera
 
 </details>
 
-### 💳 **Payment Configuration**
-
-<details>
-<summary><strong>💰 Payment Provider Setup</strong></summary>
-
-#### Stripe Configuration
-```bash
-# 1. Get API keys from Stripe Dashboard
-STRIPE_SECRET_KEY="sk_test_..."
-STRIPE_PUBLISHABLE_KEY="pk_test_..."
-
-# 2. Configure webhooks
-Webhook URL: https://yourdomain.com/api/webhooks/stripe
-Events: payment_intent.succeeded, customer.subscription.updated
-
-# 3. Set up products and prices
-# Use Stripe CLI or dashboard to create subscription plans
-```
-
-#### PayPal Configuration
-```bash
-# 1. Get credentials from PayPal Developer
-PAYPAL_CLIENT_ID="..."
-PAYPAL_CLIENT_SECRET="..."
-
-# 2. Configure webhooks
-Webhook URL: https://yourdomain.com/api/webhooks/paypal
-Events: BILLING.SUBSCRIPTION.ACTIVATED, PAYMENT.SALE.COMPLETED
-```
-
-</details>
-
 ---
 
 ## 📱 Browser Extension Features
@@ -610,70 +465,7 @@ Events: BILLING.SUBSCRIPTION.ACTIVATED, PAYMENT.SALE.COMPLETED
 </tr>
 </table>
 
----
-
-## 🌟 **What's New in v6.0.0**
-
-### 🆕 **Major Features**
-- ✅ **Multi-AI Provider Support**: OpenAI, Google, Mistral, Anthropic
-- ✅ **Universal Browser Support**: Chrome, Firefox, Safari, Edge, Opera
-- ✅ **Advanced Analytics**: Comprehensive usage and performance metrics
-- ✅ **Enhanced Security**: 2FA, audit logging, role-based access
-- ✅ **Modern UI/UX**: Redesigned dashboard with improved user experience
-
-### 🔧 **Technical Improvements**
-- ✅ **Next.js 15**: Latest framework with App Router
-- ✅ **React 19**: Enhanced performance and features
-- ✅ **TypeScript 5.8**: Improved type safety
-- ✅ **Drizzle ORM**: Type-safe database operations
-- ✅ **Better Auth**: Modern authentication system
-
-### 🐛 **Bug Fixes**
-- ✅ Fixed extension compatibility issues
-- ✅ Improved database query performance
-- ✅ Enhanced error handling and logging
-- ✅ Resolved payment webhook reliability
-- ✅ Fixed mobile responsiveness issues
-
 ## 🚀 Deployment
-
-### 🌐 **Web Platform Deployment**
-
-<details>
-<summary><strong>☁️ Production Deployment Guide</strong></summary>
-
-#### **Vercel (Recommended)**
-```bash
-# 1. Install Vercel CLI
-npm i -g vercel
-
-# 2. Build and deploy
-npm run build
-vercel --prod
-
-# 3. Configure environment variables in Vercel dashboard
-```
-
-#### **Docker Deployment**
-```dockerfile
-# Dockerfile example
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-RUN npm run build
-EXPOSE 3000
-CMD ["npm", "start"]
-```
-
-#### **Environment Setup**
-- Configure production environment variables
-- Set up SSL certificates
-- Configure database connection pooling
-- Set up monitoring and logging
-
-</details>
 
 ### 🔌 **Browser Extension Deployment**
 
@@ -705,31 +497,6 @@ npm run zip:firefox
 ```
 
 </details>
-
----
-
-## 📈 Roadmap
-
-### 🎯 **Short-term Goals (Q1 2024)**
-- [ ] 🔐 **Two-Factor Authentication**: Enhanced security features
-- [ ] 📱 **Mobile App**: React Native mobile application
-- [ ] 🌍 **Multi-language Support**: 50+ language localization
-- [ ] 🤖 **Advanced AI Features**: Custom model fine-tuning
-- [ ] 📊 **Enhanced Analytics**: Real-time performance dashboards
-
-### 🚀 **Medium-term Goals (Q2-Q3 2024)**
-- [ ] 👥 **Team Collaboration**: Multi-user workspace features
-- [ ] 🔌 **API Platform**: Public API for third-party integrations
-- [ ] 🎨 **White-label Solution**: Custom branding options
-- [ ] 📈 **Advanced Reporting**: Custom report builder
-- [ ] 🔄 **Workflow Automation**: Automated response workflows
-
-### 🌟 **Long-term Vision (Q4 2024+)**
-- [ ] 🧠 **AI Model Training**: Custom model training platform
-- [ ] 🌐 **Global Expansion**: Multi-region deployment
-- [ ] 🏢 **Enterprise Features**: Advanced admin and compliance tools
-- [ ] 🔮 **Predictive Analytics**: AI-powered growth predictions
-- [ ] 🤝 **Partner Ecosystem**: Third-party app marketplace
 
 ---
 
@@ -797,27 +564,6 @@ npm run zip:firefox
 
 ---
 
-## 📞 Support & Community
-
-<div align="center">
-
-### 🆘 **Get Help**
-
-[![GitHub Issues](https://img.shields.io/badge/GitHub-Issues-red?style=for-the-badge&logo=github)](https://github.com/your-repo/issues)
-[![Discord](https://img.shields.io/badge/Discord-Community-blue?style=for-the-badge&logo=discord)](https://discord.gg/your-server)
-[![Documentation](https://img.shields.io/badge/Docs-Documentation-green?style=for-the-badge&logo=gitbook)](https://docs.your-domain.com)
-
-</div>
-
-### 📋 **Support Channels**
-- **🐛 Bug Reports**: [GitHub Issues](https://github.com/your-repo/issues)
-- **💬 Community Chat**: [Discord Server](https://discord.gg/your-server)
-- **📖 Documentation**: [Official Docs](https://docs.your-domain.com)
-- **📧 Email Support**: support@your-domain.com
-- **💼 Enterprise Support**: enterprise@your-domain.com
-
----
-
 ## 📄 License
 
 <div align="center">
@@ -841,12 +587,6 @@ Built with ❤️ using modern web technologies
 **AI Providers:** OpenAI • Google AI • Mistral AI • Anthropic
 
 ---
-
-### ⭐ **Star this repository if you find it helpful!**
-
-[![GitHub stars](https://img.shields.io/github/stars/your-repo/ai-social-replier?style=social)](https://github.com/alexgutscher26/Replivity-an-AI-powered-social-media)
-[![GitHub forks](https://img.shields.io/github/forks/your-repo/ai-social-replier?style=social)](https://github.com/alexgutscher26/Replivity-an-AI-powered-social-media)
-[![GitHub watchers](https://img.shields.io/github/watchers/your-repo/ai-social-replier?style=social)](https://github.com/alexgutscher26/Replivity-an-AI-powered-social-media)
 
 **Made with 💻 and ☕ by the AI Social Replier Team**
 
