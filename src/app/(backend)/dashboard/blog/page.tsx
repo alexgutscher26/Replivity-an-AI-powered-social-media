@@ -42,6 +42,16 @@ const statusColors = {
   archived: "bg-gray-100 text-gray-800",
 };
 
+/**
+ * Renders a blog management dashboard component.
+ *
+ * This component handles displaying and managing blog posts, including filtering,
+ * sorting, searching, and pagination. It fetches data from the API using queries
+ * and manages state with React hooks. The component also includes functionality for
+ * deleting posts and displaying post status badges.
+ *
+ * @returns A React element representing the blog dashboard.
+ */
 export default function BlogDashboard() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<PostStatus | "all">("all");
@@ -73,12 +83,18 @@ export default function BlogDashboard() {
     },
   });
 
+  /**
+   * Deletes a post after user confirmation.
+   */
   const handleDelete = async (id: number) => {
     if (confirm("Are you sure you want to delete this post?")) {
       await deletePost.mutateAsync({ id });
     }
   };
 
+  /**
+   * Renders a badge with the capitalized status text and corresponding color.
+   */
   const getStatusBadge = (status: string) => {
     return (
       <Badge className={statusColors[status as PostStatus] || "bg-gray-100 text-gray-800"}>

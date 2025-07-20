@@ -49,6 +49,17 @@ const statusIcons = {
   spam: AlertTriangle,
 };
 
+/**
+ * Comment moderation dashboard component.
+ *
+ * This component provides a UI for moderating comments across all blog posts. It includes features such as searching,
+ * filtering by status, sorting, and pagination. Users can approve, reject, mark as spam, or delete comments.
+ * The component fetches comments data using API queries and handles mutations for moderation actions.
+ * It also displays statistics on the number of comments in different statuses and provides a table view of comments
+ * with options to interact with each comment.
+ *
+ * @returns A React component representing the comment moderation dashboard.
+ */
 export default function CommentModerationDashboard() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<CommentStatus | "all">("pending");
@@ -108,16 +119,32 @@ export default function CommentModerationDashboard() {
     },
   });
 
+  /**
+   * Updates the moderation status of a comment.
+   */
   const handleModerate = async (id: number, newStatus: "approved" | "rejected" | "spam") => {
     await moderateComment.mutateAsync({ id, status: newStatus });
   };
 
+  /**
+   * Handles deletion of a comment with confirmation.
+   */
   const handleDelete = async (id: number) => {
     if (confirm("Are you sure you want to delete this comment?")) {
       await deleteComment.mutateAsync({ id });
     }
   };
 
+  /**
+   * Renders a badge component with an icon and formatted status text based on the given status string.
+   *
+   * The function retrieves the corresponding StatusIcon from the statusIcons object using the provided status,
+   * defaulting to MessageSquare if no match is found. It also sets the background color of the badge using
+   * the statusColors object, falling back to a gray color if the status is not recognized. The status text is
+   * capitalized before being displayed within the badge.
+   *
+   * @param {string} status - The status string used to determine the icon and color of the badge.
+   */
   const getStatusBadge = (status: string) => {
     const StatusIcon = statusIcons[status as CommentStatus] || MessageSquare;
     return (
