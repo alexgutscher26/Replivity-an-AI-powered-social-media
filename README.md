@@ -844,9 +844,9 @@ Built with ❤️ using modern web technologies
 
 ### ⭐ **Star this repository if you find it helpful!**
 
-[![GitHub stars](https://img.shields.io/github/stars/your-repo/ai-social-replier?style=social)](https://github.com/alexgutscher26/Replivity-an-AI-powered-social-media.git)
-[![GitHub forks](https://img.shields.io/github/forks/your-repo/ai-social-replier?style=social)](https://github.com/alexgutscher26/Replivity-an-AI-powered-social-media.git)
-[![GitHub watchers](https://img.shields.io/github/watchers/your-repo/ai-social-replier?style=social)](https://github.com/alexgutscher26/Replivity-an-AI-powered-social-media.git)
+[![GitHub stars](https://img.shields.io/github/stars/your-repo/ai-social-replier?style=social)](https://github.com/alexgutscher26/Replivity-an-AI-powered-social-media)
+[![GitHub forks](https://img.shields.io/github/forks/your-repo/ai-social-replier?style=social)](https://github.com/alexgutscher26/Replivity-an-AI-powered-social-media)
+[![GitHub watchers](https://img.shields.io/github/watchers/your-repo/ai-social-replier?style=social)](https://github.com/alexgutscher26/Replivity-an-AI-powered-social-media)
 
 **Made with 💻 and ☕ by the AI Social Replier Team**
 
