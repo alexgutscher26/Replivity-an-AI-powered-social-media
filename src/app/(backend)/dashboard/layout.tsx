@@ -18,6 +18,9 @@ import BreadcrumbMenu from "./_components/breadcrumb-menu";
 import BreadcrumbMenuSkeleton from "./_components/breadcrumb-menu-skeleton";
 import DashboardSkeleton from "./_components/dashboard-skeleton";
 
+/**
+ * Renders a dashboard layout with authentication checks and navigation elements.
+ */
 export default async function DashboardLayout({
   children,
 }: {
