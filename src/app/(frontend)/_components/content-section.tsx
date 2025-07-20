@@ -7,25 +7,32 @@ export default function ContentSection() {
   const [settings] = api.settings.site.useSuspenseQuery();
 
   return (
-    <section className="py-16 md:py-32" id="content">
+    <section className="relative bg-black py-16 md:py-32 isolate overflow-hidden" id="content">
+      <div
+        className="absolute inset-0 -z-10"
+        style={{
+          backgroundImage:
+            'radial-gradient(rgb(55 65 81) 1px, transparent 1px)',
+          backgroundSize: '30px 30px',
+          opacity: '0.15',
+        }}
+      />
+      <div
+        className="absolute inset-0 -z-10 bg-gradient-to-b from-black via-transparent to-black"
+        style={{ opacity: 0.8 }}
+      />
+      
       <div className="mx-auto max-w-5xl space-y-8 px-6 md:space-y-16">
-        <h2 className="relative z-10 max-w-xl text-4xl font-medium lg:text-5xl">
-          Facebook, Twitter, and LinkedIn engagement booster.
+        <h2 className="relative z-10 max-w-xl text-4xl font-bold lg:text-5xl text-white tracking-tighter">
+          <span className="text-emerald-400">Facebook</span>, Twitter, and LinkedIn engagement booster.
         </h2>
         <div className="grid gap-6 sm:grid-cols-2 md:gap-12 lg:gap-24">
           <div className="relative mb-6 sm:mb-0">
-            <div className="relative aspect-76/59 rounded-2xl bg-linear-to-b from-zinc-300 to-transparent p-px dark:from-zinc-700">
+            <div className="relative aspect-76/59 rounded-2xl bg-gradient-to-b from-gray-600 to-transparent p-px border border-gray-600">
               <Image
                 src="https://oz9ry1x8bp.ufs.sh/f/QJPPsA2erx3Ukh6En8rhT2OsaJqXyrv74PUuH1tQGB9izfb6"
-                className="hidden rounded-[15px] dark:block"
-                alt="payments illustration dark"
-                width={1207}
-                height={929}
-              />
-              <Image
-                src="https://oz9ry1x8bp.ufs.sh/f/QJPPsA2erx3UBVUTdgPkvrVcaBgNEZJHfIXReo0n5iPLGQM2"
-                className="rounded-[15px] shadow dark:hidden"
-                alt="payments illustration light"
+                className="rounded-[15px]"
+                alt="AI social media engagement illustration"
                 width={1207}
                 height={929}
               />
@@ -33,18 +40,18 @@ export default function ContentSection() {
           </div>
 
           <div className="relative space-y-4">
-            <p className="text-muted-foreground">
+            <p className="text-gray-300 leading-relaxed">
               Write{" "}
-              <span className="text-accent-foreground font-bold">
+              <span className="text-emerald-400 font-bold">
                 trending posts, get more likes
               </span>
               , and increase your followers with our AI-powered social media
               marketing platform.
             </p>
 
-            <p className="text-muted-foreground">
+            <p className="text-gray-300 leading-relaxed">
               Give{" "}
-              <span className="text-accent-foreground font-bold">
+              <span className="text-emerald-400 font-bold">
                 custom prompt
               </span>{" "}
               to our AI model to fit your brand voice and style. Our AI model
@@ -53,24 +60,13 @@ export default function ContentSection() {
             </p>
 
             <div className="pt-6">
-              <blockquote className="border-l-4 pl-4">
-                <p>
+              <blockquote className="border-l-4 border-emerald-400 pl-4 bg-gray-900/50 p-4 rounded-r-lg">
+                <p className="text-gray-300 leading-relaxed">
                   Using {settings?.name} has been a game-changer for our social
                   media marketing strategy. We have seen a significant increase
                   in engagement and followers since we started using the
                   platform.
                 </p>
-
-                <div className="mt-6 space-y-3">
-                  <cite className="block font-medium">John Doe, CEO</cite>
-                  <Image
-                    className="h-5 w-fit dark:invert"
-                    src="https://html.tailus.io/blocks/customers/nvidia.svg"
-                    alt="Nvidia Logo"
-                    height="20"
-                    width="20"
-                  />
-                </div>
               </blockquote>
             </div>
           </div>

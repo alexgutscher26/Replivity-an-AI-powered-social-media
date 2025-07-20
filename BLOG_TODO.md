@@ -8,8 +8,7 @@
   - [x] Create comment components (CommentForm, CommentList, CommentItem)
   - [x] Implement nested replies
   - [x] Add moderation capabilities (approve/reject/delete)
-  - [ ] Email notifications for new comments
-  - [ ] Spam detection integration
+  - [x] Spam detection integration
 
 - [ ] **Blog Search**
   - [ ] Full-text search across posts

@@ -48,14 +48,29 @@ export default function PricingTable() {
     checkout({ productId });
   };
 
+
   return (
-    <section className="py-16 md:py-32" id="pricing">
+    <section className="relative bg-black py-16 md:py-32 isolate overflow-hidden" id="pricing">
+      <div
+        className="absolute inset-0 -z-10"
+        style={{
+          backgroundImage:
+            'radial-gradient(rgb(55 65 81) 1px, transparent 1px)',
+          backgroundSize: '30px 30px',
+          opacity: '0.15',
+        }}
+      />
+      <div
+        className="absolute inset-0 -z-10 bg-gradient-to-b from-black via-transparent to-black"
+        style={{ opacity: 0.8 }}
+      />
+      
       <div className="mx-auto max-w-6xl px-6">
         <div className="mx-auto max-w-2xl space-y-6 text-center">
-          <h1 className="text-center text-4xl font-semibold lg:text-5xl">
-            Pricing that Scales with You
+          <h1 className="text-center text-4xl font-bold lg:text-5xl text-white tracking-tighter">
+            Pricing that <span className="text-emerald-400">Scales</span> with You
           </h1>
-          <p>
+          <p className="text-lg text-gray-300 leading-relaxed">
             Choose a plan that works for you. All plans include premium features
             and dedicated support to help you grow your business.
           </p>
@@ -65,31 +80,31 @@ export default function PricingTable() {
           {products.map((product) => (
             <Card
               key={product.id}
-              className={`flex flex-col ${product.name === "Pro" ? "relative" : ""}`}
+              className={`flex flex-col bg-gray-900/50 border-gray-600 ${product.name === "Pro" ? "relative ring-2 ring-emerald-400/50" : ""}`}
             >
               {product.name === "Pro" && (
-                <span className="absolute inset-x-0 -top-3 mx-auto flex h-6 w-fit items-center rounded-full bg-linear-to-br/increasing from-purple-400 to-amber-300 px-3 py-1 text-xs font-medium text-amber-950 ring-1 ring-white/20 ring-offset-1 ring-offset-gray-950/5 ring-inset">
+                <span className="absolute inset-x-0 -top-3 mx-auto flex h-6 w-fit items-center rounded-full bg-gradient-to-r from-emerald-400 to-emerald-500 px-3 py-1 text-xs font-medium text-black">
                   Popular
                 </span>
               )}
 
               <CardHeader>
-                <CardTitle className="font-medium">{product.name}</CardTitle>
-                <span className="my-3 block text-2xl font-semibold">
+                <CardTitle className="font-bold text-white">{product.name}</CardTitle>
+                <span className="my-3 block text-2xl font-bold text-emerald-400">
                   {new Intl.NumberFormat("en-US", {
                     style: "currency",
                     currency: currency.toUpperCase(),
                     currencySign: "standard",
                   }).format(Number(product.price))}{" "}
-                  / {product.type}
+                  <span className="text-lg text-gray-300">/ {product.type}</span>
                 </span>
-                <CardDescription className="text-sm">
+                <CardDescription className="text-sm text-gray-400">
                   Per account
                 </CardDescription>
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <hr className="border-dashed" />
+                <hr className="border-dashed border-gray-600" />
                 <ul className="list-outside space-y-3 text-sm">
                   {product.marketingTaglines?.map((tagline) => {
                     const values =
@@ -98,8 +113,8 @@ export default function PricingTable() {
                         : (tagline as { values: string }).values;
 
                     return (
-                      <li key={values} className="flex items-center gap-2">
-                        <Check className="size-3" />
+                      <li key={values} className="flex items-center gap-2 text-gray-300">
+                        <Check className="size-3 text-emerald-400" />
                         {values}
                       </li>
                     );
@@ -110,7 +125,11 @@ export default function PricingTable() {
               <CardFooter className="mt-auto">
                 <Button
                   variant={product.name === "Pro" ? "default" : "outline"}
-                  className="w-full"
+                  className={`w-full ${
+                    product.name === "Pro"
+                      ? "bg-emerald-500 hover:bg-emerald-600 text-black font-bold"
+                      : "border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                  }`}
                   onClick={() => handlePlanSelection(product.id)}
                   disabled={isCheckingOut}
                 >

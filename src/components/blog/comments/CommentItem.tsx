@@ -123,12 +123,12 @@ export function CommentItem({
     .toUpperCase()
     .slice(0, 2);
 
-  const marginLeft = depth * 2; // 2rem per depth level
   const canReply = depth < maxDepth;
+  const indentStyle = depth > 0 ? { marginLeft: `${depth * 2}rem` } : {};
 
   return (
-    <div className={`${depth > 0 ? `ml-${marginLeft * 4}` : ""}`}>
-      <Card className="mb-4">
+    <div style={indentStyle}>
+      <Card className={`mb-4 ${depth > 0 ? 'border-l-4 border-l-primary/20 bg-muted/30' : ''}`}>
         <CardContent className="pt-4">
           <div className="flex gap-3">
             <Avatar className="h-10 w-10 flex-shrink-0">

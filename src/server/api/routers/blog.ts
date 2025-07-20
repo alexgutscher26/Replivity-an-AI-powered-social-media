@@ -10,7 +10,7 @@ import {
   blogComments,
   blogCommentLikes
 } from "@/server/db/schema/post-schema";
-import { eq, desc, asc, and, or, like, sql, count, inArray } from "drizzle-orm";
+import { eq, desc, asc, and, or, like, sql, count, inArray, isNull } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 // Validation schemas
@@ -551,6 +551,9 @@ export const blogRouter = createTRPCRouter({
         whereConditions.push(eq(blogComments.postId, postId));
       }
       
+      // Only fetch top-level comments (parentId is null) for proper nested structure
+      whereConditions.push(isNull(blogComments.parentId));
+      
       // Filter by status if provided
       if (status) {
         whereConditions.push(eq(blogComments.status, status));
@@ -563,7 +566,7 @@ export const blogRouter = createTRPCRouter({
       const orderByColumn = sortBy === "likeCount" ? blogComments.likeCount : blogComments.createdAt;
       
       const comments = await ctx.db.query.blogComments.findMany({
-        where: whereConditions.length > 0 ? and(...whereConditions) : undefined,
+        where: and(...whereConditions),
         with: {
           author: {
             columns: {
@@ -581,6 +584,30 @@ export const blogRouter = createTRPCRouter({
                   image: true,
                 },
               },
+              replies: {
+                with: {
+                  author: {
+                    columns: {
+                      id: true,
+                      name: true,
+                      image: true,
+                    },
+                  },
+                  replies: {
+                    with: {
+                      author: {
+                        columns: {
+                          id: true,
+                          name: true,
+                          image: true,
+                        },
+                      },
+                    },
+                    orderBy: asc(blogComments.createdAt),
+                  },
+                },
+                orderBy: asc(blogComments.createdAt),
+              },
             },
             orderBy: asc(blogComments.createdAt),
           },
@@ -591,11 +618,11 @@ export const blogRouter = createTRPCRouter({
         orderBy: sortOrder === "desc" ? desc(orderByColumn) : asc(orderByColumn),
       });
       
-      // Get total count for pagination
+      // Get total count for pagination (only top-level comments)
       const countResult = await ctx.db
         .select({ count: count() })
         .from(blogComments)
-        .where(whereConditions.length > 0 ? and(...whereConditions) : undefined);
+        .where(and(...whereConditions));
       
       const totalCount = countResult[0]?.count ?? 0;
       

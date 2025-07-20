@@ -3,7 +3,10 @@ import ContentSection from "./_components/content-section";
 import FeaturesSection from "./_components/feature-section";
 import HeroSection from "./_components/hero-section";
 import PricingTable from "./_components/pricing-table";
+import PrivacyControlSection from "./_components/privacy-control-section";
 import StatsSection from "./_components/stats-section";
+import SocialProof from "./_components/socialproof";
+import FinalCTA from "./_components/finalcta";
 
 // Structured data for pricing and subscription plans
 const pricingStructuredData = {
@@ -144,10 +147,13 @@ export default async function Home() {
       />
       
       <HeroSection />
+      <PrivacyControlSection />
+      <SocialProof />
       <FeaturesSection />
       <StatsSection />
       <ContentSection />
       <PricingTable />
+      <FinalCTA />
     </HydrateClient>
   );
 }

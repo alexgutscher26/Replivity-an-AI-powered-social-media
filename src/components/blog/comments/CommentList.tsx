@@ -6,8 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/trpc/react";
-import { CommentItem } from "./CommentItem";
 import { CommentForm } from "./CommentForm";
+import { CommentItem } from "./CommentItem";
+import { CommentDebug } from "./CommentDebug";
 import { 
   MessageSquare, 
   SortAsc, 
@@ -238,6 +239,11 @@ export function CommentList({ postId, initialCommentsCount = 0 }: CommentListPro
         <div className="text-center text-sm text-muted-foreground">
           Showing {comments.length} of {totalComments} comments
         </div>
+      )}
+      
+      {/* Debug Component - Remove in production */}
+      {process.env.NODE_ENV === 'development' && (
+        <CommentDebug postId={postId} />
       )}
     </div>
   );
