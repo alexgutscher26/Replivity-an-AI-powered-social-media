@@ -123,7 +123,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         {/* Preconnect to external domains for performance */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com&display=optional" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
         {/* DNS prefetch for common external resources */}
