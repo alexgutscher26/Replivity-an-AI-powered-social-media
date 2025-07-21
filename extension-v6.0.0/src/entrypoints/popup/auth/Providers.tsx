@@ -13,7 +13,7 @@ export function Providers() {
       LinkComponent={({ href, ...props }) => (
         <NavLink {...props} to={href} />
       )}
-      nameRequired={true}
+      nameRequired
       navigate={navigate}
     >
       <Outlet />
