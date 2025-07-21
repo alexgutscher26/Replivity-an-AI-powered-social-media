@@ -50,6 +50,19 @@ export async function POST(request: NextRequest) {
 		const payload = await request.text();
 		const signature = request.headers.get("x-appsumo-signature") ?? "";
 
+		// Parse webhook payload first to check if it's a test request
+		const event = JSON.parse(payload) as AppsumoWebhookPayload & { test?: boolean };
+
+		// Handle test requests from AppSumo for webhook validation
+		if (event.test === true) {
+			console.log("Received AppSumo test webhook for validation");
+			return NextResponse.json({
+				success: true,
+				event: event.event || "test",
+			});
+		}
+
+		// For non-test requests, verify signature
 		if (!signature) {
 			console.error("Missing AppSumo signature header");
 			return new Response("Missing x-appsumo-signature header", {
@@ -71,9 +84,6 @@ export async function POST(request: NextRequest) {
 				{ status: 401 },
 			);
 		}
-
-		// Parse webhook payload
-		const event = JSON.parse(payload) as AppsumoWebhookPayload;
 
 		console.log(`Received AppSumo webhook: ${event.event} for license ${event.license_key}`);
 
