@@ -1,5 +1,7 @@
 import { Separator } from "@/components/ui/separator";
 import { AiCaptionGeneratorForm } from "./_components/ai-caption-generator-form";
+import { ServerFeatureAccessGuard } from "@/components/server-feature-access-guard";
+import { AVAILABLE_FEATURES } from "@/server/db/schema/feature-permissions-schema";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -73,16 +75,18 @@ export default function AiCaptionGeneratorPage() {
         }}
       />
       
-      <div className="flex-1 space-y-6 p-10 pb-16">
-        <div className="space-y-0.5">
-          <h2 className="text-2xl font-bold tracking-tight">AI Caption Generator</h2>
-          <p className="text-muted-foreground">
-            Upload an image and generate engaging captions for your social media posts using AI.
-          </p>
+      <ServerFeatureAccessGuard featureKey={AVAILABLE_FEATURES.AI_CAPTION_GENERATOR}>
+        <div className="flex-1 space-y-6 p-10 pb-16">
+          <div className="space-y-0.5">
+            <h2 className="text-2xl font-bold tracking-tight">AI Caption Generator</h2>
+            <p className="text-muted-foreground">
+              Upload an image and generate engaging captions for your social media posts using AI.
+            </p>
+          </div>
+          <Separator />
+          <AiCaptionGeneratorForm />
         </div>
-        <Separator />
-        <AiCaptionGeneratorForm />
-      </div>
+      </ServerFeatureAccessGuard>
     </>
   );
 }

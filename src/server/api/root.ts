@@ -1,5 +1,6 @@
 import { billingsRouter } from "@/server/api/routers/billings";
 import { blogRouter } from "@/server/api/routers/blog";
+import { featurePermissionsRouter } from "@/server/api/routers/feature-permissions";
 import { generationRouter } from "@/server/api/routers/generations";
 import { hashtagRouter } from "@/server/api/routers/hashtags";
 import { paymentsRouter } from "@/server/api/routers/payments";
@@ -28,6 +29,7 @@ export const appRouter = createTRPCRouter({
   templates: templatesRouter,
   security: securityRouter,
   blog: blogRouter,
+  featurePermissions: featurePermissionsRouter,
 });
 
 // export type definition of API

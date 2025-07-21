@@ -1,4 +1,6 @@
 import { BioProfileOptimizer } from "./_components/bio-profile-optimizer";
+import { ServerFeatureAccessGuard } from "@/components/server-feature-access-guard";
+import { AVAILABLE_FEATURES } from "@/server/db/schema/feature-permissions-schema";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -73,15 +75,17 @@ export default function BioOptimizerPage() {
         }}
       />
       
-      <div className="container mx-auto py-6">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold tracking-tight">Bio & Profile Optimizer</h1>
-          <p className="text-muted-foreground mt-2">
-            Create compelling social media bios that capture your brand voice and attract your target audience.
-          </p>
+      <ServerFeatureAccessGuard featureKey={AVAILABLE_FEATURES.BIO_OPTIMIZER}>
+        <div className="container mx-auto py-6">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold tracking-tight">Bio & Profile Optimizer</h1>
+            <p className="text-muted-foreground mt-2">
+              Create compelling social media bios that capture your brand voice and attract your target audience.
+            </p>
+          </div>
+          <BioProfileOptimizer />
         </div>
-        <BioProfileOptimizer />
-      </div>
+      </ServerFeatureAccessGuard>
     </>
   );
 }

@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/sidebar";
 import { useSession } from "@/hooks/use-auth-hooks";
 import { api } from "@/trpc/react";
+import { useUserFeatures } from "@/hooks/use-feature-access";
+import { AVAILABLE_FEATURES, type FeatureKey } from "@/server/db/schema/feature-permissions-schema";
 import {
   ChartArea,
   Command,
@@ -24,13 +26,15 @@ import {
   MessageSquare,
   PieChart,
   Settings2,
+  Shield,
   Users2,
   Sparkles,
   Crown,
   User,
+  Twitter,
 } from "lucide-react";
 import Link from "next/link";
-import { type ComponentProps, useMemo } from "react";
+import { useMemo, type ComponentProps } from "react";
 import NavMain from "./nav-main";
 import NavSecondary from "./nav-secondary";
 import NavUser from "./nav-user";
@@ -40,6 +44,7 @@ interface NavItem {
   url: string;
   icon: typeof LayoutDashboard;
   requireAdmin?: boolean;
+  feature?: FeatureKey;
 }
 
 interface SecondaryNavItem {
@@ -65,11 +70,19 @@ const SIDEBAR_DATA: SidebarData = {
       title: "AI Caption Generator",
       url: "/dashboard/ai-caption-generator",
       icon: ImageIcon,
+      feature: AVAILABLE_FEATURES.AI_CAPTION_GENERATOR,
     },
     {
       title: "Bio & Profile Optimizer",
       url: "/dashboard/bio-optimizer",
       icon: User,
+      feature: AVAILABLE_FEATURES.BIO_OPTIMIZER,
+    },
+    {
+      title: "Tweet Generator",
+      url: "/dashboard/tweet-generator",
+      icon: Twitter,
+      feature: AVAILABLE_FEATURES.TWEET_GENERATOR,
     },
     {
       title: "Blog Management",
@@ -120,6 +133,12 @@ const SIDEBAR_DATA: SidebarData = {
       title: "Products",
       url: "/dashboard/products",
       icon: PieChart,
+      requireAdmin: true,
+    },
+    {
+      title: "Feature Permissions",
+      url: "/dashboard/feature-permissions",
+      icon: Shield,
       requireAdmin: true,
     },
     {
@@ -190,13 +209,24 @@ export default function AppSidebar({
   const { user } = useSession();
   const [siteSettings] = api.settings.site.useSuspenseQuery();
   const [currentPlan] = api.payments.getCurrentBilling.useSuspenseQuery();
+  const { hasFeature } = useUserFeatures();
 
   const filteredNavMain = useMemo(
     () =>
       SIDEBAR_DATA.navMain.filter(
-        (item) => !item.requireAdmin || user?.role === "admin",
+        (item) => {
+          // Check admin requirement
+          if (item.requireAdmin && user?.role !== "admin") {
+            return false;
+          }
+          // Check feature access
+          if (item.feature && !hasFeature(item.feature)) {
+            return false;
+          }
+          return true;
+        },
       ),
-    [user?.role],
+    [user?.role, hasFeature],
   );
 
   const siteName = siteSettings?.name ?? DEFAULT_SITE_NAME;

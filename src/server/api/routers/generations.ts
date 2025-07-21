@@ -114,31 +114,38 @@ Custom Prompt: ${customPrompt}`;
         author: input.author,
       });
 
-      // Increment usage
-      if (currentUsage) {
-        await ctx.db
-          .update(usage)
-          .set({
-            used: currentUsage.used + 1,
-            updatedAt: new Date(),
-          })
-          .where(
-            and(
-              eq(usage.userId, ctx.session.user.id),
-              eq(usage.productId, activeBilling.productId),
-            ),
-          );
-      } else {
-        await ctx.db.insert(usage).values({
-          userId: ctx.session.user.id,
-          productId: activeBilling.productId,
-          used: 1,
-        });
+      // Increment usage (skip for tweet generation from web form only)
+      // Extension calls don't have author parameter, so they should still count
+      const isTweetGenerationFromWebForm = input.source === "twitter" && input.type === "status" && input.author === "Tweet Generator";
+      
+      if (!isTweetGenerationFromWebForm) {
+        if (currentUsage) {
+          await ctx.db
+            .update(usage)
+            .set({
+              used: currentUsage.used + 1,
+              updatedAt: new Date(),
+            })
+            .where(
+              and(
+                eq(usage.userId, ctx.session.user.id),
+                eq(usage.productId, activeBilling.productId),
+              ),
+            );
+        } else {
+          await ctx.db.insert(usage).values({
+            userId: ctx.session.user.id,
+            productId: activeBilling.productId,
+            used: 1,
+          });
+        }
       }
 
       return {
         text: result.text,
-        remainingUsage: usageLimit - (usageCount + 1),
+        remainingUsage: isTweetGenerationFromWebForm 
+          ? usageLimit - usageCount // Don't increment for tweet generation from web form
+          : usageLimit - (usageCount + 1),
       };
     }),
 

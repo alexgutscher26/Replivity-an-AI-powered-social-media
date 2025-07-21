@@ -4,6 +4,7 @@ import postgres from "postgres";
 
 import * as auth from "./schema/auth-schema";
 import * as billing from "./schema/billing-schema";
+import * as featurePermissions from "./schema/feature-permissions-schema";
 import * as generations from "./schema/generations-schema";
 import * as hashtags from "./schema/hashtag-schema";
 import * as post from "./schema/post-schema";
@@ -33,6 +34,7 @@ export const db = drizzle(conn, {
     ...blog,
     ...auth,
     ...billing,
+    ...featurePermissions,
     ...generations,
     ...hashtags,
     ...products,
