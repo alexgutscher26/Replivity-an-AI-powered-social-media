@@ -274,7 +274,7 @@ export default function CommentModerationDashboard() {
                   <TableHead>Status</TableHead>
                   <TableHead>Likes</TableHead>
                   <TableHead>Created</TableHead>
-                  <TableHead className="w-[70px]"></TableHead>
+                  <TableHead className="w-[70px]" />
                 </TableRow>
               </TableHeader>
               <TableBody>

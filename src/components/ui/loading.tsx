@@ -73,12 +73,12 @@ export const PageLoading: React.FC<PageLoadingProps> = ({
 export const CardSkeleton: React.FC = () => {
   return (
     <div className="p-6 border rounded-lg space-y-4 animate-pulse">
-      <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+      <div className="h-6 bg-gray-200 rounded w-3/4" />
       <div className="space-y-2">
-        <div className="h-4 bg-gray-200 rounded"></div>
-        <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+        <div className="h-4 bg-gray-200 rounded" />
+        <div className="h-4 bg-gray-200 rounded w-5/6" />
       </div>
-      <div className="h-10 bg-gray-200 rounded w-1/3"></div>
+      <div className="h-10 bg-gray-200 rounded w-1/3" />
     </div>
   );
 };
@@ -88,10 +88,10 @@ export const TableSkeleton: React.FC<{ rows?: number }> = ({ rows = 5 }) => {
     <div className="space-y-3">
       {Array.from({ length: rows }).map((_, index) => (
         <div key={index} className="flex space-x-4 animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/6"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/4" />
+          <div className="h-4 bg-gray-200 rounded w-1/3" />
+          <div className="h-4 bg-gray-200 rounded w-1/6" />
+          <div className="h-4 bg-gray-200 rounded w-1/4" />
         </div>
       ))}
     </div>

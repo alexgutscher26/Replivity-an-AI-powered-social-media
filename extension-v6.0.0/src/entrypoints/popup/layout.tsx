@@ -33,8 +33,7 @@ export default function RootLayout() {
         <div
           aria-hidden="true"
           className="bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent"
-        >
-        </div>
+         />
       </nav>
       <Outlet />
     </div>

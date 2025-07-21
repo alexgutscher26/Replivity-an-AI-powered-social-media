@@ -5,12 +5,12 @@ export default function PrivacyControlSection() {
     <section className="bg-black text-white py-20 relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-10 left-20 w-1 h-20 bg-gray-700 opacity-30"></div>
-        <div className="absolute top-32 left-32 w-1 h-16 bg-gray-600 opacity-40"></div>
-        <div className="absolute bottom-20 right-10 w-1 h-24 bg-gray-700 opacity-30"></div>
-        <div className="absolute bottom-32 right-32 w-1 h-16 bg-gray-600 opacity-40"></div>
-        <div className="absolute top-1/2 left-1/4 w-1 h-12 bg-gray-600 opacity-50"></div>
-        <div className="absolute top-1/3 right-1/4 w-1 h-12 bg-gray-600 opacity-50"></div>
+        <div className="absolute top-10 left-20 w-1 h-20 bg-gray-700 opacity-30" />
+        <div className="absolute top-32 left-32 w-1 h-16 bg-gray-600 opacity-40" />
+        <div className="absolute bottom-20 right-10 w-1 h-24 bg-gray-700 opacity-30" />
+        <div className="absolute bottom-32 right-32 w-1 h-16 bg-gray-600 opacity-40" />
+        <div className="absolute top-1/2 left-1/4 w-1 h-12 bg-gray-600 opacity-50" />
+        <div className="absolute top-1/3 right-1/4 w-1 h-12 bg-gray-600 opacity-50" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
