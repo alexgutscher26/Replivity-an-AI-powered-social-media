@@ -209,7 +209,7 @@ export default function TwoFactorPage() {
                   className={`${inputConfig.className} ${state.error ? 'border-destructive focus:border-destructive' : ''}`}
                   required
                   autoComplete="one-time-code"
-                  autoFocus
+                  
                   aria-label={inputConfig['aria-label']}
                   aria-invalid={!!state.error}
                   aria-describedby={state.error ? "error-message" : undefined}
