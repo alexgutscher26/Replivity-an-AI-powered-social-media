@@ -30,7 +30,7 @@ export function CommentDebug({ postId }: CommentDebugProps) {
           <div className="text-sm">Content: {comment.content.substring(0, 50)}...</div>
           <div className="text-sm">Replies count: {comment.replies?.length ?? 0}</div>
         </div>
-        {comment.replies && comment.replies.map((reply: any) => renderComment(reply, depth + 1))}
+        {comment.replies?.map((reply: any) => renderComment(reply, depth + 1))}
       </div>
     );
   };

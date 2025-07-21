@@ -91,7 +91,7 @@ export function useServiceWorkerUpdate() {
   const skipWaiting = async () => {
     if ('serviceWorker' in navigator) {
       const registration = await navigator.serviceWorker.getRegistration();
-      if (registration && registration.waiting) {
+      if (registration?.waiting) {
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       }
     }
