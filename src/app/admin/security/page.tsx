@@ -151,7 +151,7 @@ export default function SecurityManagementPage() {
 
   const { data: userEvents, refetch: refetchUserEvents } = api.security.getUserSecurityEvents.useQuery(
     { userId: selectedUserId, limit: 50 },
-    { enabled: !!selectedUserId }
+    { enabled: Boolean(selectedUserId) }
   );
 
   const forcePasswordResetMutation = api.security.forcePasswordReset.useMutation({

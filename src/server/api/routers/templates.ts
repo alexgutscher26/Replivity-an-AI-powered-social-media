@@ -312,7 +312,7 @@ export const templatesRouter = createTRPCRouter({
         current: currentCount,
         limit: usageLimit,
         percentage: Math.round((currentCount / usageLimit) * 100),
-        hasActiveSubscription: !!userSubscription,
+        hasActiveSubscription: Boolean(userSubscription),
       };
     }),
 });

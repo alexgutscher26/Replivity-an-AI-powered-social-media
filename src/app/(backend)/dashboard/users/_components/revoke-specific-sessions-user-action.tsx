@@ -49,7 +49,7 @@ export default function RevokeSpecificSessionsUserAction<TData>({
       if (!users[0]?.id) return { data: { sessions: [] } };
       return await authClient.admin.listUserSessions({ userId: users[0]?.id });
     },
-    enabled: !!users[0]?.id && users.length === 1, // Only run for single user selection
+    enabled: Boolean(users[0]?.id) && users.length === 1, // Only run for single user selection
   });
 
   const listOfActiveSessions = sessions?.data?.sessions ?? [];
