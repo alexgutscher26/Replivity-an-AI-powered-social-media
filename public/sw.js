@@ -215,6 +215,7 @@ self.addEventListener('sync', (event) => {
 /**
  * Triggers a background sync operation.
  */
+// eslint-disable-next-line @typescript-eslint/require-await
 async function doBackgroundSync() {
   // Implement background sync logic here
   console.log('Background sync triggered');
