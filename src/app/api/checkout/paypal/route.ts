@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
 
     // Redirect to success page
     return NextResponse.redirect(
-      new URL(`/dashboard?subscription_status=completed`, getBaseUrl()),
+      new URL("/dashboard?subscription_status=completed", getBaseUrl()),
     );
   } catch (error) {
     console.error("PayPal webhook error:", error);

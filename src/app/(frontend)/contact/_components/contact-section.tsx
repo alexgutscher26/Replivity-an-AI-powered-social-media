@@ -185,7 +185,7 @@ export default function ContactSection() {
                             autoComplete="name"
                             {...field}
                             disabled={sendContactMail.isPending}
-                            aria-describedby={form.formState.errors.name ? `name-error` : undefined}
+                            aria-describedby={form.formState.errors.name ? "name-error" : undefined}
                             className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                           />
                         </FormControl>
@@ -210,7 +210,7 @@ export default function ContactSection() {
                             autoComplete="email"
                             {...field}
                             disabled={sendContactMail.isPending}
-                            aria-describedby={form.formState.errors.email ? `email-error` : undefined}
+                            aria-describedby={form.formState.errors.email ? "email-error" : undefined}
                             className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                           />
                         </FormControl>
@@ -234,7 +234,7 @@ export default function ContactSection() {
                           placeholder="How can we help you?"
                           {...field}
                           disabled={sendContactMail.isPending}
-                          aria-describedby={form.formState.errors.subject ? `subject-error` : undefined}
+                          aria-describedby={form.formState.errors.subject ? "subject-error" : undefined}
                           className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                         />
                       </FormControl>
@@ -258,7 +258,7 @@ export default function ContactSection() {
                           rows={4}
                           {...field}
                           disabled={sendContactMail.isPending}
-                          aria-describedby={form.formState.errors.message ? `message-error` : undefined}
+                          aria-describedby={form.formState.errors.message ? "message-error" : undefined}
                           className="resize-none transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                           maxLength={1000}
                         />
