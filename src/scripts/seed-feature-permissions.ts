@@ -1,7 +1,6 @@
 import { db } from "@/server/db";
 import { products } from "@/server/db/schema/products-schema";
-import { featurePermissions } from "@/server/db/schema/feature-permissions-schema";
-import { AVAILABLE_FEATURES } from "@/server/db/schema/feature-permissions-schema";
+import { featurePermissions, AVAILABLE_FEATURES } from "@/server/db/schema/feature-permissions-schema";
 import { nanoid } from "nanoid";
 
 /**

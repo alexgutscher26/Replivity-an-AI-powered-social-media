@@ -8,7 +8,6 @@ import * as featurePermissions from "./schema/feature-permissions-schema";
 import * as generations from "./schema/generations-schema";
 import * as hashtags from "./schema/hashtag-schema";
 import * as post from "./schema/post-schema";
-import * as blog from "./schema/post-schema";
 import * as products from "./schema/products-schema";
 import * as settings from "./schema/settings-schema";
 import * as usage from "./schema/usage-schema";
@@ -31,7 +30,6 @@ if (env.NODE_ENV !== "production") globalForDb.conn = conn;
 export const db = drizzle(conn, {
   schema: {
     ...post,
-    ...blog,
     ...auth,
     ...billing,
     ...featurePermissions,
