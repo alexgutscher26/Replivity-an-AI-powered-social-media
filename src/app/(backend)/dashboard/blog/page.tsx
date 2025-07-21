@@ -218,7 +218,7 @@ export default function BlogDashboard() {
                   <TableHead>Categories</TableHead>
                   <TableHead>Views</TableHead>
                   <TableHead>Created</TableHead>
-                  <TableHead className="w-[70px]"></TableHead>
+                  <TableHead className="w-[70px]" />
                 </TableRow>
               </TableHeader>
               <TableBody>
