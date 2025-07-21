@@ -566,7 +566,7 @@ export function BioProfileOptimizer() {
     const hasURL = /https?:\/\//.test(bio);
     const hasCallToAction = /\b(follow|contact|visit|check out|dm|message|connect|collaborate)\b/i.test(bio);
     const hasLineBreaks = bio.includes('\n');
-    const hasLocation = /\b(\w+,\s*\w+|📍)/.test(bio);
+    const hasLocation = /\b(\w+,\s*\w+|📍)/u.test(bio);
     const hasRole = /\b(ceo|founder|manager|director|specialist|expert|consultant)\b/i.test(bio);
 
     // Platform-specific suggestions
