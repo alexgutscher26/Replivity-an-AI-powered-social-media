@@ -105,7 +105,7 @@ export function TweetGeneratorForm() {
 
 		// Build context text
 		let contextText = "";
-		if (data.context && data.context.trim()) {
+		if (data.context?.trim()) {
 			contextText = `\n\nAdditional Context: ${data.context}`;
 		}
 

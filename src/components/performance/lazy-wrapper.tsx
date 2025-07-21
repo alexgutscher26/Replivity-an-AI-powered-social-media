@@ -60,7 +60,7 @@ export const IntersectionLazy: React.FC<IntersectionLazyProps> = ({
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        if (entry && entry.isIntersecting && !hasLoaded) {
+        if (entry?.isIntersecting && !hasLoaded) {
           setIsVisible(true);
           setHasLoaded(true);
         }
@@ -122,7 +122,7 @@ export const LazyImage: React.FC<LazyImageProps> = ({
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        if (entry && entry.isIntersecting) {
+        if (entry?.isIntersecting) {
           setIsInView(true);
           observer.disconnect();
         }
