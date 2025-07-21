@@ -16,7 +16,7 @@ interface ServerFeatureAccessGuardProps {
 /**
  * Server-side component that conditionally renders children based on feature access
  * This component runs during SSR and doesn't cause hydration issues
- */
+ */ 
 export async function ServerFeatureAccessGuard({
   featureKey,
   children,
@@ -44,7 +44,7 @@ export async function ServerFeatureAccessGuard({
 
     // Default: render nothing
     return null;
-  } catch (error) {
+  } catch {
     // If there's an error (e.g., no session), show upgrade prompt
     if (showUpgradePrompt) {
       return <ServerUpgradePrompt featureKey={featureKey} />;

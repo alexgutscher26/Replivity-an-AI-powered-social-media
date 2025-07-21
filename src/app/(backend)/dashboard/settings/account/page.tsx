@@ -1,5 +1,6 @@
 import { Separator } from "@/components/ui/separator";
 import { AccountForm } from "./_components/account-form";
+import AppSumoLicenseForm from "./_components/appsumo-license-form";
 import CancelPlanForm from "./_components/cancel-plan-form";
 import CurrentPlanForm from "./_components/current-plan-form";
 import DownloadExtensionForm from "./_components/download-extension-form";
@@ -16,6 +17,7 @@ export default function SettingsAccountPage() {
       </div>
       <Separator />
       <CurrentPlanForm />
+      <AppSumoLicenseForm />
       <UsagePlanForm />
       <DownloadExtensionForm />
       <AccountForm />

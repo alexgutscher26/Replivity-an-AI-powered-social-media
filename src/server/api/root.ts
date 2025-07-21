@@ -1,3 +1,4 @@
+import { appsumoLicenseRouter } from "@/server/api/routers/appsumo-license";
 import { billingsRouter } from "@/server/api/routers/billings";
 import { blogRouter } from "@/server/api/routers/blog";
 import { featurePermissionsRouter } from "@/server/api/routers/feature-permissions";
@@ -30,6 +31,7 @@ export const appRouter = createTRPCRouter({
   security: securityRouter,
   blog: blogRouter,
   featurePermissions: featurePermissionsRouter,
+  appsumoLicense: appsumoLicenseRouter,
 });
 
 // export type definition of API

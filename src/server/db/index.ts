@@ -2,6 +2,7 @@ import { env } from "@/env";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
+import * as appsumoLicense from "./schema/appsumo-license-schema";
 import * as auth from "./schema/auth-schema";
 import * as billing from "./schema/billing-schema";
 import * as featurePermissions from "./schema/feature-permissions-schema";
@@ -31,6 +32,7 @@ export const db = drizzle(conn, {
   schema: {
     ...post,
     ...auth,
+    ...appsumoLicense,
     ...billing,
     ...featurePermissions,
     ...generations,

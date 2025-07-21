@@ -3,32 +3,7 @@
 import { api } from "@/trpc/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-interface Comment {
-  id: number;
-  postId: number;
-  parentId?: number | null;
-  authorId?: string | null;
-  authorName: string;
-  authorEmail: string;
-  authorWebsite?: string | null;
-  content: string;
-  status: string;
-  ipAddress?: string | null;
-  userAgent?: string | null;
-  isEdited: boolean;
-  editedAt?: string | null;
-  likeCount: number;
-  metadata?: any;
-  createdAt: string;
-  updatedAt?: string | null;
-  author?: {
-    id: string;
-    name: string | null;
-    image: string | null;
-  } | null;
-  replies?: Comment[];
-  likes?: Array<{ commentId: number; userId: string; createdAt: string }>;
-}
+
 
 interface CommentDebugProps {
   postId: number;
