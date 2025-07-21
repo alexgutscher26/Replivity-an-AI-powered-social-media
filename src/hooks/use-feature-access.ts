@@ -70,7 +70,7 @@ export function useFeaturePermissionsAdmin() {
     return api.featurePermissions.getProductFeatures.useQuery(
       { productId },
       {
-        enabled: !!productId,
+        enabled: Boolean(productId),
         staleTime: 2 * 60 * 1000, // 2 minutes for admin data
       }
     );

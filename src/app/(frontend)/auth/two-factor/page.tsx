@@ -211,7 +211,7 @@ export default function TwoFactorPage() {
                   autoComplete="one-time-code"
                   autoFocus
                   aria-label={inputConfig['aria-label']}
-                  aria-invalid={!!state.error}
+                  aria-invalid={Boolean(state.error)}
                   aria-describedby={state.error ? "error-message" : undefined}
                   disabled={state.isLoading}
                 />

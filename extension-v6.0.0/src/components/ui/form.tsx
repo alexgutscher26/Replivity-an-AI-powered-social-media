@@ -94,7 +94,7 @@ function FormLabel({
   return (
     <LabelPrimitive.Root
       data-slot="form-label"
-      data-error={!!error}
+      data-error={Boolean(error)}
       className={cn(
         "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
         "data-[error=true]:text-destructive-foreground",
@@ -118,7 +118,7 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
           ? `${formDescriptionId}`
           : `${formDescriptionId} ${formMessageId}`
       }
-      aria-invalid={!!error}
+      aria-invalid={Boolean(error)}
       {...props}
     />
   )

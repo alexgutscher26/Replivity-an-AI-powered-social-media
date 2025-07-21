@@ -59,7 +59,7 @@ export default function AssignUserAction({
   // Get active billings for the selected product
   const activeBillings = api.billings.getActiveBillingsByProduct.useQuery(
     { productId: data[0]?.id ?? "" },
-    { enabled: !!data[0]?.id },
+    { enabled: Boolean(data[0]?.id) },
   );
 
   // Get users list with server-side search
@@ -101,7 +101,7 @@ export default function AssignUserAction({
         },
       };
     },
-    enabled: !!data[0]?.id && !activeBillings.isLoading,
+    enabled: Boolean(data[0]?.id) && !activeBillings.isLoading,
   });
 
   const createBillingMutation = api.billings.createBilling.useMutation({
