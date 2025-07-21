@@ -28,7 +28,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     return (
       <AuthUIProviderTanstack
         authClient={authClient}
-        rememberMe={true}
+        rememberMe
         navigate={(href: string) => router.push(href)}
         persistClient={false}
         replace={(href: string) => router.replace(href)}
@@ -53,7 +53,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <AuthUIProviderTanstack
       authClient={authClient}
-      rememberMe={true}
+      rememberMe
       {...(providers.length > 0 && !error && { providers })}
       navigate={(href: string) => router.push(href)}
       persistClient={false}
