@@ -21,7 +21,7 @@ export const LazyWrapper: React.FC<LazyWrapperProps> = ({
 };
 
 // Higher-order component for lazy loading
-export function withLazyLoading<P extends Record<string, any>>(
+export function withLazyLoading<P = {}>(
   Component: React.ComponentType<P>,
   fallback?: React.ReactNode
 ) {
