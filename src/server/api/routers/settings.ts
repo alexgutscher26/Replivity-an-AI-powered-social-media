@@ -494,7 +494,7 @@ export const settingsRouter = createTRPCRouter({
       const logs: string[] = [];
 
       try {
-        logs.push(`Testing connection to mail provider...`);
+        logs.push("Testing connection to mail provider...");
 
         const { data, error } = await resend.emails.send({
           from: `${siteSettings?.name} <${mailConfiguration?.fromEmail}>`,

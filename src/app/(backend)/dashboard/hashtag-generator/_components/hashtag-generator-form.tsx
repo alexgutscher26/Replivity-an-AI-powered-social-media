@@ -144,7 +144,7 @@ ${values.optimizeForPlatform ? `PLATFORM OPTIMIZATION FOR ${values.platform.toUp
 - Competition level preference: ${values.competitionLevel}
 ` : ""}
 
-${values.includeTrending ? `TRENDING REQUIREMENTS:\n- Include 2-3 currently trending hashtags relevant to the content\n- Balance trending with niche-specific hashtags\n- Ensure trending hashtags align with the content theme\n` : ''}
+${values.includeTrending ? "TRENDING REQUIREMENTS:\n- Include 2-3 currently trending hashtags relevant to the content\n- Balance trending with niche-specific hashtags\n- Ensure trending hashtags align with the content theme\n" : ''}
 
 Requirements:
 - Generate exactly ${values.count} hashtags

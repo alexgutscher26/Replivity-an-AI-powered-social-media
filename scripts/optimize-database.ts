@@ -287,7 +287,7 @@ class DatabaseOptimizer {
  * Main execution
  */
 async function main() {
-  console.log(`🔧 Database Optimization Tool`);
+  console.log("🔧 Database Optimization Tool");
   console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
   const databaseHost = process.env.DATABASE_URL?.split('@')[1] ?? 'localhost';
   console.log(`🗄️  Database: ${databaseHost}`);
