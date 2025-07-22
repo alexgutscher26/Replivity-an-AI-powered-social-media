@@ -42,6 +42,17 @@ const linkLicenseSchema = z.object({
 
 type LinkLicenseForm = z.infer<typeof linkLicenseSchema>;
 
+/**
+ * Renders a form to link AppSumo licenses and displays user licenses with their status.
+ *
+ * The component fetches user licenses using the `api.appsumoLicense.getUserLicenses.useQuery` hook.
+ * It renders a list of existing licenses, each with its status badge and usage details.
+ * A dialog is provided for users to input and link new AppSumo license keys.
+ * The form validates the input using Zod resolver and handles successful submission by linking the license
+ * and displaying a success message. Errors are caught and displayed as toast notifications.
+ *
+ * @returns JSX.Element representing the AppSumo License form component.
+ */
 export default function AppSumoLicenseForm() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const utils = api.useUtils();
@@ -72,12 +83,25 @@ export default function AppSumoLicenseForm() {
     },
   });
 
+  /**
+   * Submits the form data to link a license.
+   */
   const onSubmit = (data: LinkLicenseForm) => {
     linkLicense.mutate({
       licenseKey: data.licenseKey,
     });
   };
 
+  /**
+   * Returns a status badge component based on the provided status.
+   *
+   * This function uses a switch statement to determine which badge variant and styling to apply
+   * based on the input status. It returns a JSX element representing the badge with appropriate
+   * icon and text for each case. If the status does not match any predefined cases, it defaults
+   * to an outline badge displaying the raw status string.
+   *
+   * @param status - The current status as a string.
+   */
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
@@ -109,6 +133,9 @@ export default function AppSumoLicenseForm() {
     }
   };
 
+  /**
+   * Formats a given date into a locale-specific string or returns "N/A" if input is invalid.
+   */
   const formatDate = (date: Date | string | null) => {
     if (!date) return "N/A";
     return new Date(date).toLocaleDateString();

@@ -8,8 +8,15 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { AppsumoOAuthUserInfo } from "@/server/db/schema/appsumo-license-schema";
 
 /**
- * AppSumo OAuth callback handler
- * Handles the OAuth flow when users are redirected from AppSumo
+ * Handles the AppSumo OAuth callback process.
+ *
+ * This function processes the OAuth flow when users are redirected from AppSumo after authorization.
+ * It handles errors, exchanges the authorization code for an access token, fetches user information,
+ * checks if the user exists in the system, and redirects accordingly to either sign-in or registration pages.
+ *
+ * @param request - The NextRequest object containing the OAuth callback parameters.
+ * @returns A redirect response based on the processing outcome.
+ * @throws Error if any step in the OAuth flow fails.
  */
 export async function GET(request: NextRequest) {
 	const searchParams = request.nextUrl.searchParams;
@@ -91,7 +98,13 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * Exchange authorization code for access token
+ * Exchanges an authorization code for an access token using AppSumo OAuth.
+ *
+ * This function sends a POST request to the AppSumo token endpoint with the provided
+ * authorization code and client credentials. It checks if the necessary environment
+ * variables are set, constructs the request parameters, and handles potential errors
+ * in the response. If successful, it returns the parsed JSON response containing
+ * the access token details.
  */
 async function exchangeCodeForToken(code: string) {
 	const clientId = env.APPSUMO_CLIENT_ID;
@@ -132,7 +145,14 @@ async function exchangeCodeForToken(code: string) {
 }
 
 /**
- * Fetch user information from AppSumo API
+ * Fetches user information from the AppSumo API using an access token.
+ *
+ * This function sends a GET request to the AppSumo API endpoint for user information,
+ * includes the provided access token in the authorization header, and returns the
+ * user data in JSON format. If the response is not successful (i.e., not OK),
+ * it throws an error with the status code and error text.
+ *
+ * @param accessToken - The OAuth access token required to authenticate the request.
  */
 async function fetchAppsumoUserInfo(
 	accessToken: string,
