@@ -10,6 +10,7 @@ import Link from "next/link";
 const footerSections = {
   Pages: [
     { title: "Blog", href: "/blog" },
+    { title: "Status", href: "https://replivity.betteruptime.com" },
   ],
   Socials: [
     { title: "Github", href: "https://github.com/alexgutscher26/Replivity-an-AI-powered-social-media" },
