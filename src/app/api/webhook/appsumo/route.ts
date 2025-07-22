@@ -6,8 +6,15 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { AppsumoWebhookPayload } from "@/server/db/schema/appsumo-license-schema";
 
 /**
- * Verify AppSumo webhook signature
- * AppSumo uses HMAC-SHA256 for webhook verification
+ * Verifies the AppSumo webhook signature using HMAC-SHA256.
+ *
+ * The function generates an expected signature by hashing the payload with the provided webhook secret
+ * and compares it to the received signature in a time-constant manner to prevent timing attacks.
+ *
+ * @param payload - The payload data received from the webhook.
+ * @param signature - The signature received from the webhook for verification.
+ * @param webhookSecret - The shared secret used to sign the webhook payloads.
+ * @returns Returns `true` if the signatures match, otherwise `false`.
  */
 function verifyAppsumoWebhookSignature(
 	payload: string,
@@ -37,6 +44,17 @@ function verifyAppsumoWebhookSignature(
 	}
 }
 
+/**
+ * Handle incoming AppSumo webhook requests.
+ *
+ * This function processes incoming webhook requests from AppSumo, validates them,
+ * and performs actions based on the event type (activation, deactivation, upgrade,
+ * downgrade, refund). It includes signature verification and handles test events for
+ * validation purposes. Errors are logged and appropriate responses are returned.
+ *
+ * @param request - The NextRequest object containing the webhook payload and headers.
+ * @returns A JSON response indicating success or error.
+ */
 export async function POST(request: NextRequest) {
 	try {
 		// Get webhook secret from environment
