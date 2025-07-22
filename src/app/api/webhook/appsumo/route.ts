@@ -37,6 +37,16 @@ function verifyAppsumoWebhookSignature(
 	}
 }
 
+/**
+ * Handle incoming AppSumo webhook requests.
+ *
+ * This function processes incoming webhooks from AppSumo, validates them using a signature,
+ * and handles different event types such as license activation, deactivation, upgrades, downgrades, and refunds.
+ * It logs relevant information and returns appropriate JSON responses based on the event processed.
+ *
+ * @param request - The Next.js request object containing webhook payload and headers.
+ * @returns A JSON response indicating success or failure of the webhook processing.
+ */
 export async function POST(request: NextRequest) {
 	try {
 		// Get webhook secret from environment
