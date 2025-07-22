@@ -6,6 +6,9 @@ import CurrentPlanForm from "./_components/current-plan-form";
 import DownloadExtensionForm from "./_components/download-extension-form";
 import UsagePlanForm from "./_components/usage-plan-form";
 
+/**
+ * Renders the account settings page with various forms and information sections.
+ */
 export default function SettingsAccountPage() {
   return (
     <div className="space-y-6">
