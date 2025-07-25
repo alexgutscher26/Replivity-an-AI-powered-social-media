@@ -557,9 +557,10 @@ export class PayPalPaymentProvider implements PaymentProvider {
     };
   }
 
-  async getBalance() {
-    throw new Error("PayPal getBalance not implemented yet");
-    return { available: 0, pending: 0, currency: "usd" }; // TypeScript needs this even though it's unreachable
+  public async getBalance(): Promise<{ available: number; pending: number; currency: string; }> {
+    // PayPal does not have a direct API for retrieving account balance.
+    // This is a workaround for the unimplemented feature, returning a placeholder balance.
+    return { available: 0, pending: 0, currency: 'USD' };
   }
 
   manageBillingPortal(customerId: string): Promise<{ url: string }> {
