@@ -154,12 +154,12 @@ const SIDEBAR_DATA: SidebarData = {
     },
   ],
   navSecondary: [
-    {
-      title: "Support",
-      url: "support",
-      icon: LifeBuoy,
-      dialog: true,
-    },
+   // {
+   //   title: "Support",
+   //   url: "support",
+   //   icon: LifeBuoy,
+   //   dialog: true,
+   // },
   ],
 };
 
