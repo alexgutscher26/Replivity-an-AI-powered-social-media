@@ -557,6 +557,9 @@ export class PayPalPaymentProvider implements PaymentProvider {
     };
   }
 
+  /**
+   * Retrieves a placeholder account balance for PayPal.
+   */
   public async getBalance(): Promise<{ available: number; pending: number; currency: string; }> {
     // PayPal does not have a direct API for retrieving account balance.
     // This is a workaround for the unimplemented feature, returning a placeholder balance.
