@@ -60,6 +60,15 @@ export const featurePermissionsRouter = createTRPCRouter({
 
   // Get features available to the current user based on their subscription
   getUserFeatures: protectedProcedure.query(async ({ ctx }) => {
+    // Admin users have access to all features
+    if (ctx.session.user.role === "admin") {
+      return Object.values(AVAILABLE_FEATURES).map((featureKey) => ({
+        key: featureKey,
+        displayName: getFeatureDisplayName(featureKey as FeatureKey),
+        description: getFeatureDescription(featureKey as FeatureKey),
+      }));
+    }
+
     // Get user's current billing/product
     const userBilling = await db
       .select({
