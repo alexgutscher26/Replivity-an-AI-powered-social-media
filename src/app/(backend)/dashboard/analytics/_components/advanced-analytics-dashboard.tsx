@@ -38,6 +38,12 @@ import TwitterUsage from "../../_components/twitter-usage";
 import { UsageOverview } from "../../_components/usage-overview";
 
 // Real data components
+/**
+ * Renders a card displaying total user statistics.
+ *
+ * This function fetches the total number of users and their percentage change from last month using the `api.user.getTotalUsers.useQuery` hook.
+ * It then renders a card with the total user count and the percentage change, styled accordingly based on whether the change is positive or negative.
+ */
 function UserStatsCard() {
   const { data: userStats } = api.user.getTotalUsers.useQuery();
   
@@ -63,6 +69,15 @@ function UserStatsCard() {
   );
 }
 
+/**
+ * Renders a card displaying the response rate calculated as usage per user.
+ *
+ * This function fetches total usage and total users data using API hooks.
+ * It calculates the response rate by dividing total usage by total users,
+ * formatting it to one decimal place. If there are no users, it defaults
+ * the response rate to "0.0". The card displays this rate along with a title
+ * and a description.
+ */
 function ResponseRateCard() {
   const { data: totalUsage } = api.usage.getTotalUsage.useQuery({ isSiteWide: true });
   const { data: totalUsers } = api.user.getTotalUsers.useQuery();
@@ -88,6 +103,9 @@ function ResponseRateCard() {
   );
 }
 
+/**
+ * Renders a card displaying the average daily usage over the past week.
+ */
 function ResponseTimeCard() {
   const { data: dailyStats } = api.generations.getDailyStats.useQuery({ days: 7, isSiteWide: true });
   
@@ -112,6 +130,16 @@ function ResponseTimeCard() {
   );
 }
 
+/**
+ * Render engagement metrics components for Facebook, Twitter, and LinkedIn.
+ *
+ * This function fetches site-wide statistics from Facebook, Twitter, and LinkedIn,
+ * calculates total engagements and average percentage change, and renders them in a grid layout.
+ * Each social media platform's data is displayed in its respective card with formatted values and percentage changes.
+ * If no data is available for a platform, it defaults to zero or "No change".
+ *
+ * @returns A React component rendering the engagement metrics cards.
+ */
 function EngagementMetrics() {
   const { data: facebookStats } = api.generations.getFacebookStats.useQuery({ isSiteWide: true });
   const { data: twitterStats } = api.generations.getTwitterStats.useQuery({ isSiteWide: true });
@@ -185,6 +213,15 @@ function EngagementMetrics() {
   );
 }
 
+/**
+ * A React component that displays financial metrics including total revenue, monthly revenue,
+ * paid users, and average revenue per user (ARPU). It fetches data from three API endpoints:
+ * getTotalSales, getRevenueOverview, and getPaidUsers. The component calculates MRR (Monthly Recurring Revenue),
+ * revenue change percentage, and ARPU based on the fetched data.
+ *
+ * It renders four cards displaying the total revenue, monthly revenue with a change percentage,
+ * number of paid users, and ARPU. Each card includes visual indicators and formatted values for better readability.
+ */
 function RevenueMetrics() {
   const { data: totalSales } = api.billings.getTotalSales.useQuery();
   const { data: revenueOverview } = api.billings.getRevenueOverview.useQuery();
@@ -266,10 +303,23 @@ function RevenueMetrics() {
   );
 }
 
+/**
+ * @function Dashboard
+ * @description A React component that renders a dashboard with multiple tabs, each displaying various metrics and insights related to user growth, system performance, revenue trends, feature adoption, seasonal usage patterns, and trend predictions.
+ *
+ * The component uses the `Tabs` component from the 'ui/tabs' library to create tabbed navigation. Each tab corresponds to a different section of data analysis:
+ * - Overview: Displays key metrics such as latency, user count, system uptime, new users, and active features.
+ * - Performance: Shows performance indicators including server load, error rate, API response time, cache hit ratio, and database query time.
+ * - Revenue: Breaks down revenue by payment method, plan type, and other relevant categories.
+ * - Trends: Analyzes growth rates, peak usage times, trending features, feature adoption trends, seasonal trends, and predicts future user growth, feature usage, and revenue increases.
+ */
 export default function AdvancedAnalyticsDashboard() {
   const [timeRange, setTimeRange] = useState("30");
   const [refreshing, setRefreshing] = useState(false);
 
+  /**
+   * Handles the refresh action by setting a loading state and simulating a delay.
+   */
   const handleRefresh = async () => {
     setRefreshing(true);
     // Simulate refresh delay
