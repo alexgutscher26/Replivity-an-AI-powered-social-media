@@ -3,6 +3,14 @@ import { getSession } from "@/server/utils";
 import { redirect } from "next/navigation";
 import AdvancedAnalyticsDashboard from "./_components/advanced-analytics-dashboard";
 
+/**
+ * Renders the AnalyticsPage component.
+ *
+ * This function first retrieves the user session and checks if the user has an "admin" role.
+ * If the user is not an admin, they are redirected to the "/dashboard" page.
+ * If the user is an admin, it renders a container with a title and description,
+ * followed by a separator and the AdvancedAnalyticsDashboard component.
+ */
 export default async function AnalyticsPage() {
   const session = await getSession();
 
